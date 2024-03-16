@@ -36,3 +36,10 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('copySecret', Copy) {
+    from './2024_BEOKKOTTHON_TEAM_24_BE_ENV'
+    include "*.yml"
+    include "*.properties"
+    into 'src/main/resources'
+}
