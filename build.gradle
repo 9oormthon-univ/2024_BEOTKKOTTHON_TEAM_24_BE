@@ -37,8 +37,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+processResources.dependsOn('copySecret')
+
 tasks.register('copySecret', Copy) {
-    from './2024_BEOKKOTTHON_TEAM_24_BE_ENV'
+    from '2024_BEOTKKOTTHON_TEAM_24_BE_ENV'
     include "*.yml"
     include "*.properties"
     into 'src/main/resources'
