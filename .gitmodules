@@ -1,3 +1,6 @@
 [submodule "2024_BEOTKKOTTHON_TEAM_24_BE_ENV"]
 	path = 2024_BEOTKKOTTHON_TEAM_24_BE_ENV
 	url = https://github.com/Jhsysng/2024_BEOTKKOTTHON_TEAM_24_BE_ENV.git
+	branch = main
+[submodule "lv-library"]
+	branch = main
