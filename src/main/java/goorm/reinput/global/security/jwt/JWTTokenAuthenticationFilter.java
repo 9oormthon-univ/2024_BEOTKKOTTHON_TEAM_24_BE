@@ -1,22 +1,29 @@
 package goorm.reinput.global.security.jwt;
 
+import goorm.reinput.global.auth.PrincipalDetails;
 import goorm.reinput.global.auth.PrincipalDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
-public class JWTTokenAuthenticationFilter {
+public class JWTTokenAuthenticationFilter extends OncePerRequestFilter {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String TOKEN_HEADER = "Authorization";
     private final PrincipalDetailsService principalDetailsService;
@@ -28,7 +35,7 @@ public class JWTTokenAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain chain) throws ServletException, IOException {
         String token = getJwtFromRequest(request);
         log.info("[JWTTokenAuthenticationFilter] doFilterInternal : {}", token);
 
@@ -37,9 +44,8 @@ public class JWTTokenAuthenticationFilter {
                 String tokenType = tokenProvider.getTokenTypeByToken(token);
                 log.info("Token Type : " + tokenType);
                 if (tokenType.equals("ACCESS")) {
-                    String userId = tokenProvider.getUserIdByToken(token);
-                    //username but use userid
-                    PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(userId);
+                    Long userId = Long.parseLong(tokenProvider.getUserIdByToken(token));
+                    PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUserId(userId);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info("[JwtFilter] Access Token Authentication Success");
@@ -85,5 +91,4 @@ public class JWTTokenAuthenticationFilter {
         return null;
     }
 
-}
 }

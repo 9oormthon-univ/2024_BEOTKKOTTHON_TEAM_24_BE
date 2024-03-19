@@ -32,6 +32,9 @@ public class PrincipalDetails implements UserDetails {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
+    //추가 구현
+    public Long getUserId(){ return user.getUserId(); }
+
     @Override
     public String getPassword() {
         return user.getUserPassword();

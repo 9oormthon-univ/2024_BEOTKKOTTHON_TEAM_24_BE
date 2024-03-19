@@ -1,12 +1,19 @@
 package goorm.reinput.global.security.jwt;
 
 import goorm.reinput.global.auth.PrincipalDetails;
+import goorm.reinput.global.domain.TokenType;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+@Slf4j
+@Component
 public class TokenProvider {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
@@ -25,7 +32,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
                 .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(accessTokenExpiration).toInstant()))
-                .setSubject(principalDetails.getUserId())
+                .setSubject(principalDetails.getUserId().toString())
                 .claim("type", TokenType.ACCESS)
                 .compact();
     }
@@ -37,7 +44,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(refreshTokenExpiration).toInstant()))
-                .setSubject(principalDetails.getUserId())
+                .setSubject(principalDetails.getUserId().toString())
                 .claim("type", TokenType.REFRESH)
                 .compact();
     }
@@ -70,16 +77,16 @@ public class TokenProvider {
             log.info("===== JWT Token validating - TokenProvider ======");
             byte[] signingKey = jwtSecret.getBytes(StandardCharsets.UTF_8);
 
-            // Parse the token. If it's invalid, an exception will be thrown
+            // 토큰을 파싱
             Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token);
 
-            // If no exception is thrown, the token is valid
+            // 예외가 없다면 유효한 토큰
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
-            // Log the exception (or handle it as needed)
+            //todo: Custom Exception (필요시)
             log.error("Invalid JWT token: {}", e.getMessage());
             return false;
         }
