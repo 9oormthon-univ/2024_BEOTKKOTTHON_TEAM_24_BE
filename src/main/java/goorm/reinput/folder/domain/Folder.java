@@ -19,7 +19,8 @@ public class Folder extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long folderId;
     private String folderName;
-    private String folderColor;
+    @Enumerated(EnumType.STRING)
+    private FolderColor folderColor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
@@ -29,7 +30,7 @@ public class Folder extends BaseTimeEntity {
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Insight> insightList;
     @Builder
-    public Folder(String folderName, String folderColor, User user) {
+    public Folder(String folderName, FolderColor folderColor, User user) {
         this.folderName = folderName;
         this.folderColor = folderColor;
         this.user = user;
