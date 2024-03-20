@@ -60,7 +60,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          platforms: linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.DOCKER_HUB_REPOSITORY }}:latest
 
   backend-docker-pull-and-run:
