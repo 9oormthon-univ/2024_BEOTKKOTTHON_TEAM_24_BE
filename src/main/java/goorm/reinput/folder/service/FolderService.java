@@ -22,7 +22,7 @@ public class FolderService {
     private final UserRepository userRepository;
     private final CustomFolderRepository customFolderRepository;
 
-    private List<FolderResponseDto> getFolderList(Long userId) {
+    public List<FolderResponseDto> getFolderList(Long userId) {
         log.info("[FolderService] getFolderList {} called", userId);
         if(userId == null) {
             log.error("[FolderService] userId is null");
