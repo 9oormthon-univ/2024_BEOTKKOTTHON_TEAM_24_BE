@@ -26,25 +26,25 @@ public class TokenProvider {
 
 
     //Access 토큰 생성
-    public String generateAccessToken(PrincipalDetails principalDetails) {
+    public String generateAccessToken(Long userId) {
         byte[] signingKey = jwtSecret.getBytes(StandardCharsets.UTF_8);
 
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
                 .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(accessTokenExpiration).toInstant()))
-                .setSubject(principalDetails.getUserId().toString())
+                .setSubject(userId.toString())
                 .claim("type", TokenType.ACCESS)
                 .compact();
     }
 
     //Refresh 토큰 생성
-    public String generateRefreshToken(PrincipalDetails principalDetails) {
+    public String generateRefreshToken(Long userId) {
         byte[] signingKey = jwtSecret.getBytes(StandardCharsets.UTF_8);
 
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(refreshTokenExpiration).toInstant()))
-                .setSubject(principalDetails.getUserId().toString())
+                .setSubject(userId.toString())
                 .claim("type", TokenType.REFRESH)
                 .compact();
     }
