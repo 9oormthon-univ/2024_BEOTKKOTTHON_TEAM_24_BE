@@ -75,4 +75,10 @@ public class UserService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    public void deactivate(Long userId) {
+        log.info("[UserService] delete userId : {}", userId);
+        customUserRepository.deactivateUserByUserId(userId);
+    }
+
 }

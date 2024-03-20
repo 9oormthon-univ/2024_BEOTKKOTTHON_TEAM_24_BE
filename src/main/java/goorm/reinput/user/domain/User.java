@@ -12,6 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
+@Table(name = "reinput_user")
 public class User extends BaseTimeEntity {
     @Id @GeneratedValue
     private Long userId;
