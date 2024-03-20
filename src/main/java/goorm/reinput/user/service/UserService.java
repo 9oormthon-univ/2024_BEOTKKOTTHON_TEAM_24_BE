@@ -8,6 +8,7 @@ import goorm.reinput.user.domain.dto.UserSignupDto;
 import goorm.reinput.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,12 +18,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FolderRepository folderRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signUp(UserSignupDto userSignUpDto) {
         log.info("[UserService] signUp userEmail : {}", userSignUpDto.getUserEmail());
+        //user 저장
         User user = User.builder()
                 .userEmail(userSignUpDto.getUserEmail())
-                .userPassword(userSignUpDto.getUserPassword())
+                .userPassword(bCryptPasswordEncoder.encode(userSignUpDto.getUserPassword()))
                 .userName(userSignUpDto.getUserName())
                 .job(userSignUpDto.getJob())
                 .build();
