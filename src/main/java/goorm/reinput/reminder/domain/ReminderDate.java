@@ -11,6 +11,8 @@ import java.util.List;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class ReminderDate {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reminderDateId;
     @OneToOne
     private Reminder reminder;
 
