@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/healthcheck")
+    public String healthcheck() {
+        return "OK";
+    }
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(final @Valid @RequestBody UserSignupDto userSignupDto) {
         log.info("[UserController] signUp userEmail : {}", userSignupDto.getUserEmail());
