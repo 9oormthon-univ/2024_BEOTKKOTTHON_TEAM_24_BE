@@ -23,6 +23,9 @@ public class Reminder extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Insight insight;
 
+    @OneToOne(mappedBy = "reminder")
+    private ReminderDate reminderDate;
+
     @Builder
     public Reminder(Boolean isEnable, LocalDateTime lastRemindedAt, Insight insight) {
         this.isEnable = isEnable;

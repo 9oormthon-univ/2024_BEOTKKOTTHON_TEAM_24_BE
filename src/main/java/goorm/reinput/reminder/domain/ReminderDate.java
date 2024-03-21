@@ -23,4 +23,5 @@ public class ReminderDate {
     @CollectionTable(name = "remind_days", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "remind_day")
     private List<Integer> remindDays;
+
 }
