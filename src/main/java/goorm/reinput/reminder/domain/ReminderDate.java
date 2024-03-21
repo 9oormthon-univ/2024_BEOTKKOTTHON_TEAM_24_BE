@@ -25,6 +25,7 @@ public class ReminderDate {
     @Column(name = "remind_day")
     private List<Integer> remindDays;
 
+
     @Builder
     public ReminderDate(Reminder reminder, RemindType remindType, List<Integer> remindDays){
         this.reminder = reminder;

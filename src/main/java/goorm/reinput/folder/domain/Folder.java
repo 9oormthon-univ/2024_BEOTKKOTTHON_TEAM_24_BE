@@ -23,7 +23,6 @@ public class Folder extends BaseTimeEntity {
     private FolderColor folderColor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
     private User user;
 
 
