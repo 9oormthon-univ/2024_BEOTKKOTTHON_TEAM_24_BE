@@ -10,5 +10,5 @@ public class InsightResponseDto {
 
     private Long insightId;
     private Long folderId;
-    private InsightRequestDto insight;
+    private InsightCreateDto insight;
 }

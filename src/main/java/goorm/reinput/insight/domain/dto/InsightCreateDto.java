@@ -1,9 +1,8 @@
 package goorm.reinput.insight.domain.dto;
 
-import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.InsightImage;
-import jakarta.persistence.*;
+import goorm.reinput.reminder.domain.RemindType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,7 @@ import java.util.List;
 // 인사이트 저장 dto
 @Getter
 @NoArgsConstructor
-public class InsightRequestDto {
+public class InsightCreateDto {
 
     private String insightUrl;
     private String insightTitle;
@@ -23,5 +22,7 @@ public class InsightRequestDto {
     private Integer viewCount;
     private List<HashTag> hashTagList;
     private List<InsightImage> insightImageList;
+    private RemindType remindType;
+    private List<Integer> remindDays;
     private String folderName;
 }

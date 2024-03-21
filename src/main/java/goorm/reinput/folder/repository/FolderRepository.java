@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByFolderIdAndUser(Long folderId, User user);
+    Optional<Folder> findByFolderName(String folderName);
 
 }
