@@ -43,7 +43,8 @@ public class CustomReminderRepository {
                         insight.insightId.as("insightId"),
                         reminder.reminderId.as("reminderId"),
                         insight.insightTitle.as("insightTitle"),
-                        insight.insightMainImage.as("insightMainImage")
+                        insight.insightMainImage.as("insightMainImage"),
+                        reminder.lastRemindedAt.as("lastRemindedAt")
                 ))
                 .from(reminder)
                 .join(reminder.insight, insight)

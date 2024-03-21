@@ -33,6 +33,8 @@ class CustomReminderRepositoryTest {
     @Autowired
     private CustomReminderRepository customReminderRepository;
 
+    private static final LocalDateTime now = LocalDateTime.now();
+
 
 
     @BeforeEach
@@ -77,10 +79,9 @@ class CustomReminderRepositoryTest {
         em.persist(insightImage);
         em.flush();
         em.clear();
-
         Reminder reminder1 = Reminder.builder()
                 .isEnable(true)
-                .lastRemindedAt(LocalDateTime.now())
+                .lastRemindedAt(now)
                 .insight(insight)
                 .build();
 
@@ -107,6 +108,7 @@ class CustomReminderRepositoryTest {
         assertThat(reminderQuestionQueryDtos.get(0).getReminderId()).isNotNull();
         assertThat(reminderQuestionQueryDtos.get(0).getInsightId()).isNotNull();
         assertThat(reminderQuestionQueryDtos.get(0).getInsightTagList().get(0)).isEqualTo("hashTag");
+        assertThat(reminderQuestionQueryDtos.get(0).getLastRemindedAt()).isEqualTo(now);
     }
 
 
