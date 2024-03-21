@@ -8,7 +8,7 @@ import goorm.reinput.folder.domain.dto.FolderShareDto;
 import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
-import goorm.reinput.insight.domain.repository.CustomInsightRepository;
+import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

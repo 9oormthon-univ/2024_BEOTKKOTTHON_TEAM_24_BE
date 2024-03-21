@@ -8,6 +8,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +24,12 @@ import static goorm.reinput.insight.domain.QInsight.insight;
 @Slf4j
 public class CustomFolderRepository {
     private final EntityManager entityManager;
-    private final JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+    private final JPAQueryFactory queryFactory;
+    @Autowired
+    public CustomFolderRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+        this.queryFactory = new JPAQueryFactory(this.entityManager);
+    }
 
     public Optional<List<FolderResponseDto>> getFolderList(Long userId) {
         //insight count는 folder 테이블에 없는 컬럼이므로, folderId를 이용하여 insight 테이블에서 count를 가져와야 한다.
