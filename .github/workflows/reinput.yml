@@ -23,7 +23,7 @@ jobs:
       - name: ✨ Checkout repository
         uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
           token: ${{ secrets.ACTION_TOKEN }}
 
       - name: ✨ JDK 17 설정
