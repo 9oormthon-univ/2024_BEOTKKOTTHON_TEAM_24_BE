@@ -4,6 +4,8 @@ import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
 import goorm.reinput.folder.domain.dto.FolderDto;
 import goorm.reinput.folder.domain.dto.FolderResponseDto;
+import goorm.reinput.folder.domain.dto.FolderShareDto;
+import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.user.repository.UserRepository;
@@ -66,7 +68,7 @@ public class FolderService {
     }
 
     @Transactional
-    public void modifyFolder(Long userId, FolderDto folderDto){
+    public void updateFolder(Long userId, FolderDto folderDto){
         log.info("[FolderService] modifyFolder {} called", userId);
 
         if(userId == null) {
@@ -89,5 +91,21 @@ public class FolderService {
             throw new IllegalArgumentException("folderId is null");
         }
         folderRepository.deleteById(folderId);
+    }
+
+    public FolderShareResponseDto createShareLink(Long userId, FolderShareDto folderShareDto) {
+        log.info("[FolderService] createShareLink {} called", userId);
+        /* folder가 userId에 속하는지 확인
+         없으면 exception
+         있으면 share link 생성*/
+        if(!folderRepository.findByFolderIdAndUser(folderShareDto.getFolderId(), userRepository.findByUserId(userId).orElseThrow()).isPresent()) {
+            log.error("[FolderService] folder not found with id {}", folderShareDto.getFolderId());
+            throw new IllegalArgumentException("folder not found with id " + folderShareDto.getFolderId());
+        }
+
+        //todo : create share link
+        return FolderShareResponseDto.builder()
+                .url(String.format("http://reinput.online/folder/share/%d/%s", folderShareDto.getFolderId(), folderShareDto.isCopyable()))
+                .build();
     }
 }

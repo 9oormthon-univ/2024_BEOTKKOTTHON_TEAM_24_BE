@@ -22,7 +22,7 @@ import static goorm.reinput.insight.domain.QInsight.insight;
 @Slf4j
 public class CustomFolderRepository {
     private final EntityManager entityManager;
-    private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
     public Optional<List<FolderResponseDto>> getFolderList(Long userId) {
         //insight count는 folder 테이블에 없는 컬럼이므로, folderId를 이용하여 insight 테이블에서 count를 가져와야 한다.
