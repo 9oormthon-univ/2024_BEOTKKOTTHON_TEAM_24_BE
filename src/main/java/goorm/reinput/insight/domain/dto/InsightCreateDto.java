@@ -22,6 +22,7 @@ public class InsightCreateDto {
     private Integer viewCount;
     private List<HashTag> hashTagList;
     private List<InsightImage> insightImageList;
+    private boolean isEnable;
     private RemindType remindType;
     private List<Integer> remindDays;
     private String folderName;
