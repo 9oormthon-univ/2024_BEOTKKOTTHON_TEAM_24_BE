@@ -9,11 +9,10 @@ import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.insight.domain.dto.InsightCreateDto;
 import goorm.reinput.insight.domain.dto.InsightResponseDto;
-
+import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.insight.repository.HashTagRepository;
 import goorm.reinput.insight.repository.InsightImageRepository;
 import goorm.reinput.insight.repository.InsightRepository;
-import goorm.reinput.reminder.domain.RemindType;
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderDate;
 import goorm.reinput.reminder.repository.ReminderDateRepository;
@@ -42,13 +41,56 @@ public class InsightService {
     private final ReminderRepository reminderRepository;
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
+    private final CustomInsightRepository customInsightRepository;
 
     public InsightResponseDto getInsightDetail(Long userId, Long insightId) {
-        Optional<Insight> insight = insightRepository.findByInsightId(insightId);
+        Insight insight = insightRepository.findByInsightId(insightId)
+                .orElseThrow(() -> new IllegalArgumentException("Insight not found"));
 
-        // InsightResponseDto에 값을 매핑하는 작업이 필요함
+        Folder folder = folderRepository.findByFolder(insight.getFolder())
+                .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
 
+        List<HashTag> hashTags = hashTagRepository.findByInsight(insight)
+                .orElseThrow(() -> new IllegalArgumentException("HashTag not found"));
 
+        List<InsightImage> insightImages = insightImageRepository.findByInsight(insight)
+                .orElseThrow(() -> new IllegalArgumentException("Insight images not found"));
+
+        Reminder reminder = reminderRepository.findByInsight(insight)
+                .orElseThrow(() -> new IllegalArgumentException("Reminder not found"));
+
+        // 조회수 1 증가 및 저장
+        incrementViewCount(insight);
+
+        // DTO 매핑
+        InsightResponseDto.InsightResponseDtoBuilder builder = InsightResponseDto.builder()
+                .insightId(insight.getInsightId())
+                .insightTitle(insight.getInsightTitle())
+                .insightUrl(insight.getInsightUrl())
+                .insightSummary(insight.getInsightSummary())
+                .insightMainImage(insight.getInsightMainImage())
+                .insightMemo(insight.getInsightMemo())
+                .insightSource(insight.getInsightSource())
+                .viewCount(insight.getViewCount())
+                .hashTagList(hashTags)
+                .insightImageList(insightImages)
+                .isEnable(reminder.getIsEnable())
+                .folderName(folder.getFolderName())
+                .folderId(folder.getFolderId());
+
+        if (reminder.getIsEnable()) {
+            ReminderDate reminderDate = reminderDateRepository.findByReminder(reminder)
+                    .orElseThrow(() -> new IllegalArgumentException("ReminderDate not found"));
+            builder.remindType(reminderDate.getRemindType())
+                    .remindDays(reminderDate.getRemindDays());
+        }
+
+        return builder.build();
+    }
+
+    private void incrementViewCount(Insight insight) {
+        insight.setViewCount(insight.getViewCount() + 1);
+        insightRepository.save(insight);
     }
 
     @Transactional

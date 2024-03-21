@@ -25,12 +25,7 @@ public class InsightController {
     private final UserService userService;
 
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "401"),
-            @ApiResponse(responseCode = "403"),
-            @ApiResponse(responseCode = "500")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PostMapping()
     public void saveInsight(@Parameter(hidden = true) final @AuthenticationPrincipal Long userId, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
         log.info("[InsightController] saveInsight {} called", userId);
@@ -39,19 +34,13 @@ public class InsightController {
 
     // 2. 인사이트 상세보기 GET
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401"),
-            @ApiResponse(responseCode = "403"),
-            @ApiResponse(responseCode = "500")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping()
     public ResponseEntity<InsightResponseDto> getInsightDetail(@Parameter(hidden = true) final @AuthenticationPrincipal Long userId, final @PathVariable Long insightId) {
         log.info("[InsightController] getInsightDetail {} called", userId);
-        insightService.getInsightDetail(userId, insightId);
 
         // 인사이트 리스트 반환
-        return
+        return ResponseEntity.ok().body(insightService.getInsightDetail(userId, insightId));
     }
 
 

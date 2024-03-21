@@ -1,6 +1,7 @@
 package goorm.reinput.reminder.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,11 @@ public class ReminderDate {
     @CollectionTable(name = "remind_days", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "remind_day")
     private List<Integer> remindDays;
+
+    @Builder
+    public ReminderDate(Reminder reminder, RemindType remindType, List<Integer> remindDays){
+        this.reminder = reminder;
+        this.remindType = remindType;
+        this.remindDays = remindDays;
+    }
 }
