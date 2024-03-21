@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/insight")
 public class InsightController {
-
+/*
     private final InsightService insightService;
     private final UserService userService;
 
@@ -37,7 +37,7 @@ public class InsightController {
 
         // 인사이트 리스트 반환
         return
-    }
+    }*/
 
     // 2. 인사이트 상세보기 GET
 
