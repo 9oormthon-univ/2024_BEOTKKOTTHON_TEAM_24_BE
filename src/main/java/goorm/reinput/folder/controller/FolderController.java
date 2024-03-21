@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +31,19 @@ public class FolderController {
         log.info("[FolderController] createShareLink {} called", userId);
         return ResponseEntity.ok().body(folderService.createShareLink(userId, folderShareDto));
     }
-    /*
-    //todo copy folder 구현
+
     @GetMapping("/share/copy/{folderId}")
     public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal Long userId, final @PathVariable Long folderId) {
         log.info("[FolderController] copyFolder {} called", userId);
         folderService.copyFolder(userId, folderId);
-        return ResponseEntity.ok().body("success");
+        return new ResponseEntity<>("success", HttpStatus.CREATED);
+    }
+    /*
+    //todo : 인사이트 전체 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<InsightResponseDto>> searchInsight(final @AuthenticationPrincipal Long userId, final @RequestParam String keyword) {
+        log.info("[FolderController] searchInsight {} called", userId);
+        return ResponseEntity.ok().body(folderService.searchInsight(userId, keyword));
     }*/
 
     @PostMapping
