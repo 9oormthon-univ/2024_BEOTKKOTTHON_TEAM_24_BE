@@ -8,6 +8,7 @@ import goorm.reinput.folder.domain.dto.FolderShareDto;
 import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
+import goorm.reinput.insight.domain.repository.CustomInsightRepository;
 import goorm.reinput.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,9 @@ import java.util.List;
 public class FolderService {
     private final FolderRepository folderRepository;
     private final UserRepository userRepository;
+    //private final InsightRepository insightRepository;
     private final CustomFolderRepository customFolderRepository;
+    private final CustomInsightRepository customInsightRepository;
 
     public List<FolderResponseDto> getFolderList(Long userId) {
         log.info("[FolderService] getFolderList {} called", userId);
@@ -92,6 +95,55 @@ public class FolderService {
         }
         folderRepository.deleteById(folderId);
     }
+    /*
+    @Transactional
+    public void copyFolder(Long userId, Long folderId){
+        log.info("[FolderService] copyFolder {} called", userId);
+        if(userId == null) {
+            log.error("[FolderService] userId is null");
+            throw new IllegalArgumentException("userId is null");
+        }
+        if(folderId == null) {
+            log.error("[FolderService] folderId is null");
+            throw new IllegalArgumentException("folderId is null");
+        }
+
+        //todo : 공유여부 검증
+
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> {
+            log.error("[FolderService] folder not found with id {}", folderId);
+            return new IllegalArgumentException("folder not found with id " + folderId);
+        });
+
+        Folder savedFolder = folderRepository.save(Folder.builder()
+                .user(userRepository.findById(userId).orElseThrow(() -> {
+                    log.error("[FolderService] user not found");
+                    return new IllegalArgumentException("user not found");
+                }))
+                .folderName(folder.getFolderName())
+                .folderColor(folder.getFolderColor())
+                .build());
+
+        List<Insight> insightList = customInsightRepository.findByInsightFolderId(folderId).orElseThrow(() -> {
+            log.error("[FolderService] insight not found with folderId {}", folderId);
+            return new IllegalArgumentException("insight not found with folderId " + folderId);
+        });
+
+        for(Insight insight : insightList) {
+            Insight tmpInsight = insightRepository.save(Insight.builder()
+                    .folder(savedFolder)
+                    .insightTitle(insight.getInsightTitle())
+                    .insightUrl(insight.getInsightUrl())
+                    .insightSummary(insight.getInsightSummary())
+                    .insightMainImage(insight.getInsightMainImage())
+                    .insightMemo(insight.getInsightMemo())
+                    .insightSource(insight.getInsightSource())
+                    .viewCount(0)
+                    .folder(savedFolder)
+                    .build());
+
+        }
+    }*/
 
     public FolderShareResponseDto createShareLink(Long userId, FolderShareDto folderShareDto) {
         log.info("[FolderService] createShareLink {} called", userId);

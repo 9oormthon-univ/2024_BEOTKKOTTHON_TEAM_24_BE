@@ -15,7 +15,7 @@ import static goorm.reinput.user.domain.QUser.user;
 @RequiredArgsConstructor
 public class CustomUserRepository {
     private final EntityManager entityManager;
-    private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
     public Optional<User> findByUserEmail(String userEmail) {
         return Optional.ofNullable(queryFactory.selectFrom(user)
