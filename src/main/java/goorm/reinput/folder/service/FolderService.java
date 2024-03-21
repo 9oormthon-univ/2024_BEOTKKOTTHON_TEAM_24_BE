@@ -104,7 +104,7 @@ public class FolderService {
         }
         folderRepository.deleteById(folderId);
     }
-
+    // userId 검색후 공유를 원하는 folder를 찾아서 copy
     @Transactional
     public void copyFolder(Long userId, Long folderId) {
         log.info("[FolderService] copyFolder {} called", userId);
@@ -133,6 +133,10 @@ public class FolderService {
                 .orElseThrow(() -> new IllegalArgumentException("insight not found with folderId " + folderId))
                 .forEach(insight -> copyInsightWithDependencies(insight, savedFolder));
     }
+
+    /*
+    copy folder에 필요한 insight, insightImage, hashTag를 복사
+     */
 
     private void copyInsightWithDependencies(Insight insight, Folder savedFolder) {
         Insight copiedInsight = insightRepository.save(Insight.builder()
