@@ -21,7 +21,6 @@ import static goorm.reinput.insight.domain.QHashTag.hashTag;
 import static goorm.reinput.insight.domain.QInsight.insight;
 import static goorm.reinput.reminder.domain.QReminder.reminder;
 import static goorm.reinput.reminder.domain.QReminderDate.reminderDate;
-import static goorm.reinput.reminder.domain.QReminderQuestion.reminderQuestion1;
 
 
 @Repository
@@ -35,8 +34,8 @@ public class CustomReminderRepository {
         this.queryFactory = new JPAQueryFactory(this.em);
     }
     //가장 읽은 오래된 리마인더 5개만 조회, insight와 reminder question join
-    public List<ReminderQuestionQueryDto> findOldestReminderDto() {
-        // 먼저, 기본적인 정보만 조회
+    public List<ReminderQuestionQueryDto> findOldestReminderDto(Long userId) {
+        // 해당 user의 reminder 중 가장 오래된 5개를 조회
         List<ReminderQuestionQueryDto> results = queryFactory
                 .select(Projections.fields(ReminderQuestionQueryDto.class,
                         reminder.reminderQuestion.reminderQuestion.as("reminderQuestion"),
@@ -48,11 +47,10 @@ public class CustomReminderRepository {
                 ))
                 .from(reminder)
                 .join(reminder.insight, insight)
+                .where(insight.folder.user.userId.eq(userId))
                 .orderBy(reminder.lastRemindedAt.asc())
                 .limit(5)
                 .fetch();
-
-        // 결과를 반복 처리하여 각 Insight에 대한 태그 목록을 조회하고 설정
         results.forEach(dto -> {
             List<String> tags = queryFactory
                     .select(hashTag.hashTagName)
@@ -65,17 +63,18 @@ public class CustomReminderRepository {
         return results;
     }
 
-    public List<Reminder> findOldestReminders() {
+    public List<Reminder> findOldestReminders(Long userId) {
         return queryFactory
                 .selectFrom(reminder)
                 .orderBy(reminder.lastRemindedAt.asc())
-                .where(reminder.isEnable.isTrue())
+                .where(reminder.isEnable.isTrue().and(insight.folder.user.userId.eq(userId)))
+                .join(reminder.insight, insight)
                 .limit(5)
                 .fetch();
     }
 
     // 리마인드할 인사이트 조회
-    public List<Reminder> findRemindersToNotify() {
+    public List<Reminder> findRemindersToNotify(Long userId) {
 
         // 오늘 날짜와 요일
         LocalDate today = LocalDate.now();
@@ -85,7 +84,8 @@ public class CustomReminderRepository {
         return queryFactory
                 .selectFrom(reminder)
                 .join(reminder.reminderDate, reminderDate)
-                .where(reminder.isEnable.isTrue()
+                .join(reminder.insight, insight)
+                .where(reminder.isEnable.isTrue().and(insight.folder.user.userId.eq(userId))
                         .and(reminderDate.remindType.eq(RemindType.DEFAULT)
                                 .and(reminder.lastRemindedAt.after(LocalDate.now().minusDays(1).atStartOfDay())
                                         .or(reminder.lastRemindedAt.after(LocalDate.now().minusWeeks(1).atStartOfDay()))
@@ -95,5 +95,6 @@ public class CustomReminderRepository {
                         .or(reminderDate.remindType.eq(RemindType.MONTH)
                                 .and(reminderDate.remindDays.contains(todayMonthDay))))
                 .fetch();
+
     }
 }

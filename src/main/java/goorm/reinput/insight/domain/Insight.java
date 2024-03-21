@@ -2,6 +2,7 @@ package goorm.reinput.insight.domain;
 
 import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.global.domain.BaseTimeEntity;
+import goorm.reinput.reminder.domain.Reminder;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class Insight extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folderId")
     private Folder folder;
+
+    @OneToOne(mappedBy = "insight")
+    private Reminder reminder;
 
     @OneToMany(mappedBy = "insight", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HashTag> hashTagList;

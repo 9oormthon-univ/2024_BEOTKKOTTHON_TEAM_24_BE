@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("dev")
@@ -35,15 +34,15 @@ class CustomReminderRepositoryTest {
 
     private static final LocalDateTime now = LocalDateTime.now();
 
-
+    User user1 = User.builder()
+            .userEmail("user1")
+            .userPassword("password1")
+            .userName("name1")
+            .build();
 
     @BeforeEach
     public void testEntity(){
-        User user1 = User.builder()
-                .userEmail("user1")
-                .userPassword("password1")
-                .userName("name1")
-                .build();
+
 
         Folder folder1 = Folder.builder()
                 .folderName("folder1")
@@ -77,8 +76,7 @@ class CustomReminderRepositoryTest {
         em.persist(hashTag);
         em.persist(hashTag2);
         em.persist(insightImage);
-        em.flush();
-        em.clear();
+
         Reminder reminder1 = Reminder.builder()
                 .isEnable(true)
                 .lastRemindedAt(now)
@@ -93,12 +91,13 @@ class CustomReminderRepositoryTest {
                 .build();
 
         em.persist(reminderQuestion);
-
+        em.flush();
+        em.clear();
     }
 
     @Test
     public void findOldestReminderDto() {
-        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto();
+        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(user1.getUserId());
 
         assertThat(reminderQuestionQueryDtos.size()).isEqualTo(1);
         assertThat(reminderQuestionQueryDtos.get(0).getInsightTitle()).isEqualTo("title");
