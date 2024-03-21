@@ -8,15 +8,24 @@ import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.insight.domain.dto.InsightCreateDto;
+import goorm.reinput.insight.domain.dto.InsightResponseDto;
+
 import goorm.reinput.insight.repository.HashTagRepository;
 import goorm.reinput.insight.repository.InsightImageRepository;
 import goorm.reinput.insight.repository.InsightRepository;
+import goorm.reinput.reminder.domain.RemindType;
+import goorm.reinput.reminder.domain.Reminder;
+import goorm.reinput.reminder.domain.ReminderDate;
+import goorm.reinput.reminder.repository.ReminderDateRepository;
+import goorm.reinput.reminder.repository.ReminderQuestionRepository;
+import goorm.reinput.reminder.repository.ReminderRepository;
 import goorm.reinput.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,15 +36,26 @@ public class InsightService {
     private final InsightRepository insightRepository;
     private final UserRepository userRepository;
     private final FolderRepository folderRepository;
+    private final FolderService folderService;
+    private final ReminderDateRepository reminderDateRepository;
+    private final ReminderQuestionRepository reminderQuestionRepository;
+    private final ReminderRepository reminderRepository;
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
-    private final FolderService folderService;
-    @Transactional
-    public void saveInsight(Long userId, InsightCreateDto dto){
 
+    public InsightResponseDto getInsightDetail(Long userId, Long insightId) {
+        Optional<Insight> insight = insightRepository.findByInsightId(insightId);
+
+        // InsightResponseDto에 값을 매핑하는 작업이 필요함
+
+
+    }
+
+    @Transactional
+    public void saveInsight(Long userId, InsightCreateDto dto) {
         // 1. folderName이 기존애 존재하지 않을 경우, 먼저 폴더를 생성합니다.
         Optional<Folder> folderOptional = folderRepository.findByFolderName(dto.getFolderName());
-        if(!folderOptional.isPresent()) {
+        if (!folderOptional.isPresent()) {
             folderService.saveFolder(userId, dto.getFolderName(), FolderColor.BLUE);
         }
 
@@ -58,7 +78,7 @@ public class InsightService {
 
         // 3. 사진 리스트를 저장합니다.
         List<InsightImage> insightImageList = dto.getInsightImageList();
-        for(InsightImage image : insightImageList){
+        for (InsightImage image : insightImageList) {
             InsightImage insightImage = InsightImage.builder()
                     .insightImageUrl(image.getInsightImageUrl())
                     .build();
@@ -68,7 +88,7 @@ public class InsightService {
 
         // 4. 해시태그 리스트를 저장합니다.
         List<HashTag> hashTagList = dto.getHashTagList();
-        for (HashTag tag : hashTagList){
+        for (HashTag tag : hashTagList) {
             HashTag hashTag = HashTag.builder()
                     .hashTagName(tag.getHashTagName())
                     .build();
@@ -76,13 +96,24 @@ public class InsightService {
             hashTagRepository.save(hashTag);
         }
 
-        // TODO. 5. reminder을 생성합니다.
+        // reminder을 생성합니다.
+        Reminder reminder = Reminder.builder()
+                .insight(insight)
+                .isEnable(dto.isEnable())
+                .lastRemindedAt(LocalDateTime.now())
+                .build();
 
+        reminderRepository.save(reminder);
 
-        // TODO. 6. reminder-date를 생성합니다.
+        // reminder-date를 생성합니다. isEnable이 false인 경우 생성하지 않습니다.
+        if (dto.isEnable()) {
+            ReminderDate reminderDate = ReminderDate.builder()
+                    .reminder(reminder)
+                    .remindType(dto.getRemindType())
+                    .remindDays(dto.getRemindDays())
+                    .build();
 
-
-        // TODO. 7. reminder-question을 생성합니다.
-
+            reminderDateRepository.save(reminderDate);
+        }
     }
 }
