@@ -47,7 +47,7 @@ public class InsightService {
         Insight insight = insightRepository.findByInsightId(insightId)
                 .orElseThrow(() -> new IllegalArgumentException("Insight not found"));
 
-        Folder folder = folderRepository.findByFolder(insight.getFolder())
+        Folder folder = folderRepository.findByFolderId(insight.getFolder().getFolderId())
                 .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
 
         List<HashTag> hashTags = hashTagRepository.findByInsight(insight)
