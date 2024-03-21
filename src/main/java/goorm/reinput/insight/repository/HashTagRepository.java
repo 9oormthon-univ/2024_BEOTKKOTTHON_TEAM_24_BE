@@ -1,4 +1,4 @@
-package goorm.reinput.insight.domain.repository;
+package goorm.reinput.insight.repository;
 
 import goorm.reinput.insight.domain.HashTag;
 import org.springframework.data.jpa.repository.JpaRepository;
