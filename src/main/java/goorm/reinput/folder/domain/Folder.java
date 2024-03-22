@@ -8,12 +8,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 
 @Getter
 @Entity
+@Setter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Folder extends BaseTimeEntity {
     @Id

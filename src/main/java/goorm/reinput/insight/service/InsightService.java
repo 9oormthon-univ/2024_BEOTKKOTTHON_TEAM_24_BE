@@ -8,6 +8,7 @@ import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.insight.domain.dto.InsightCreateDto;
+import goorm.reinput.insight.domain.dto.InsightModifyDto;
 import goorm.reinput.insight.domain.dto.InsightResponseDto;
 import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import goorm.reinput.insight.repository.CustomInsightRepository;
@@ -16,6 +17,7 @@ import goorm.reinput.insight.repository.InsightImageRepository;
 import goorm.reinput.insight.repository.InsightRepository;
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderDate;
+import goorm.reinput.reminder.domain.ReminderQuestion;
 import goorm.reinput.reminder.repository.ReminderDateRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
@@ -47,6 +49,80 @@ public class InsightService {
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
 
+    public void modifyInsight(Long userId, InsightModifyDto dto) {
+
+        // 인사이트 내용 업데이트
+        Insight insight = insightRepository.findByInsightId(dto.getInsightId()).orElseThrow(() -> new IllegalArgumentException("Insight not found"));
+
+        insight.setInsightUrl(dto.getInsightUrl());
+        insight.setInsightTitle(dto.getInsightTitle());
+        insight.setInsightSummary(dto.getInsightSummary());
+        insight.setInsightMainImage(dto.getInsightMainImage());
+        insight.setInsightMemo(dto.getInsightMemo());
+        insight.setInsightSource(dto.getInsightSource());
+        insight.setFolder(folderRepository.findByFolderId(dto.getFolderId()).orElseThrow(() -> new IllegalArgumentException("folder not found")));
+        insightRepository.save(insight);
+
+        // 기존에 존재하는 해시태그를 모두 삭제 후 재생성
+        List<HashTag> hashTagList = hashTagRepository.findByInsight(insight).orElseThrow(() -> new IllegalArgumentException("hashTag not found"));
+        for (HashTag tag : hashTagList) {
+            hashTagRepository.delete(tag);
+        }
+
+        List<String> hashTagNameList = dto.getHashTagList();
+        for (String tag : hashTagNameList) {
+            HashTag hashTag = HashTag.builder()
+                    .insight(insight)
+                    .hashTagName(tag)
+                    .build();
+
+            hashTagRepository.save(hashTag);
+        }
+
+        // 첨부 이미지 변경
+        List<InsightImage> insightImageList = insightImageRepository.findByInsight(insight).orElse(Collections.emptyList());
+
+        for (InsightImage img : insightImageList) {
+            insightImageRepository.delete(img);
+        }
+
+        List<String> insightImageUrlList = dto.getInsightImageList();
+        for (String image : insightImageUrlList) {
+            InsightImage insightImage = InsightImage.builder()
+                    .insight(insight)
+                    .insightImageUrl(image)
+                    .build();
+
+            insightImageRepository.save(insightImage);
+        }
+
+        // 리마인더 변경
+        Reminder reminder = reminderRepository.findByInsight(insight).orElseThrow(() -> new IllegalArgumentException("reminder not found"));
+        reminder.setIsEnable(dto.isEnable());
+        reminderRepository.save(reminder);
+
+        if (dto.isEnable()) {
+            ReminderDate reminderDate = reminderDateRepository.findByReminder(reminder).orElseThrow(() -> new IllegalArgumentException("reminderDate not found"));
+
+            reminderDate.setReminder(reminder);
+            reminderDate.setRemindType(dto.getRemindType());
+            reminderDate.setRemindDays(dto.getRemindDays());
+
+            reminderDateRepository.save(reminderDate);
+        }
+
+        // 질문 답변 변경
+        List<Long> questionId = dto.getReminderQuestionId();
+        List<String> reminderAnswer = dto.getReminderAnswer();
+        int idx = 0;
+        for(Long id : questionId){
+            ReminderQuestion reminderQuestion = reminderQuestionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("reminderQuestion not found")    );
+
+            reminderQuestion.setReminderAnswer(reminderAnswer.get(idx++));
+            reminderQuestionRepository.save(reminderQuestion);
+        }
+    }
+
     @Transactional
     public List<InsightSimpleResponseDto> getInsightList(Long userId, Long folderId) {
         List<Insight> insightList = customInsightRepository.findByInsightFolderId(folderId).orElseGet(Collections::emptyList);
@@ -76,7 +152,8 @@ public class InsightService {
             hashTagNameList.add(h.getHashTagName());
         }
 
-        List<InsightImage> insightImageList = insightImageRepository.findByInsight(insight).orElseThrow(() -> new IllegalArgumentException("Insight images not found"));
+        // 첨부 이미지는 없을 수도 있음
+        List<InsightImage> insightImageList = insightImageRepository.findByInsight(insight).orElse(Collections.emptyList());
 
         List<String> insightImageNameList = new ArrayList<>();
         for (InsightImage url : insightImageList) {
@@ -87,6 +164,9 @@ public class InsightService {
 
         // 조회수 1 증가 및 저장
         incrementViewCount(insight);
+
+        // 리마인더 질문&답변은 없을 수도 있음
+        List<ReminderQuestion> reminderQuestionList = reminderQuestionRepository.findByReminder(reminder).orElse(Collections.emptyList());
 
         // DTO 매핑
         InsightResponseDto.InsightResponseDtoBuilder builder = InsightResponseDto.builder().
@@ -101,7 +181,8 @@ public class InsightService {
                 hashTagList(hashTagNameList).
                 insightImageList(insightImageNameList).
                 isEnable(reminder.getIsEnable()).
-                folderName(folder.getFolderName()).folderId(folder.getFolderId());
+                folderName(folder.getFolderName()).folderId(folder.getFolderId()).
+                reminderQuestionList(reminderQuestionList);
 
         if (reminder.getIsEnable()) {
             ReminderDate reminderDate = reminderDateRepository.findByReminder(reminder).orElseThrow(() -> new IllegalArgumentException("ReminderDate not found"));
@@ -145,8 +226,8 @@ public class InsightService {
         for (String tag : hashTagList) {
             HashTag hashTag = HashTag.builder()
                     .insight(insight)
-                            .hashTagName(tag)
-                            .build();
+                    .hashTagName(tag)
+                    .build();
 
             hashTagRepository.save(hashTag);
 
@@ -156,15 +237,13 @@ public class InsightService {
         log.info("enable = {} ", dto.isEnable());
         reminderRepository.save(reminder);
 
+        ReminderDate reminderDate = ReminderDate.builder()
+                .reminder(reminder).
+                remindType(dto.getRemindType()).
+                remindDays(dto.getRemindDays()).
+                build();
 
-        if (dto.isEnable()) {
-            ReminderDate reminderDate = ReminderDate.builder()
-                            .reminder(reminder).
-                    remindType(dto.getRemindType()).
-                    remindDays(dto.getRemindDays()).
-                    build();
-
-            reminderDateRepository.save(reminderDate);
-        }
+        reminderDateRepository.save(reminderDate);
     }
+
 }
