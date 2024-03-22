@@ -2,16 +2,14 @@ package goorm.reinput.folder.service;
 
 import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
-import goorm.reinput.folder.domain.dto.FolderDto;
-import goorm.reinput.folder.domain.dto.FolderResponseDto;
-import goorm.reinput.folder.domain.dto.FolderShareDto;
-import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
+import goorm.reinput.folder.domain.dto.*;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.global.util.AESUtil;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
+import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.insight.repository.HashTagRepository;
 import goorm.reinput.insight.repository.InsightImageRepository;
@@ -23,7 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -186,5 +186,28 @@ public class FolderService {
                 .build();
     }
 
+
+    public List<InsightSimpleResponseDto> findAllInsights(Long userId, String keyword) {
+        //todo: insight로 책임 이동
+        log.info("[FolderService] findAllInsights {} called", userId);
+        List<InsightSearchDto> insightSearchDtos = customFolderRepository.searchInsight(customFolderRepository.searchInsightInFolder(userId, keyword));
+
+        // Comparator를 정의하여 제목, 요약, 태그, 메모 순으로 정렬
+        insightSearchDtos.forEach(insightSearchDto -> insightSearchDto.calculateMatchScores(keyword));
+
+        List<InsightSearchDto> sortedInsightSearchDtos = insightSearchDtos.stream()
+                .sorted(Comparator.comparing(InsightSearchDto::getMatchScore).reversed())
+                .toList();
+
+
+        return sortedInsightSearchDtos.stream().map(insightSearchDto -> InsightSimpleResponseDto.builder()
+                .insightId(insightSearchDto.getInsightId())
+                .insightMainImage(insightSearchDto.getInsightMainImage())
+                .insightTitle(insightSearchDto.getInsightTitle())
+                .insightSummary(insightSearchDto.getInsightSummary())
+                .hashTagList(insightSearchDto.getHashTagList())
+                .build())
+                .collect(Collectors.toList());
+        }
 
 }
