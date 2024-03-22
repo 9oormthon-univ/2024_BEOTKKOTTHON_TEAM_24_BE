@@ -2,6 +2,7 @@ package goorm.reinput.folder.controller;
 
 import goorm.reinput.folder.domain.dto.*;
 import goorm.reinput.folder.service.FolderService;
+import goorm.reinput.global.auth.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
@@ -21,21 +22,21 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping
-    public ResponseEntity<List<FolderResponseDto>> getFolderList(final @AuthenticationPrincipal Long userId) {
-        log.info("[FolderController] getFolderList {} called", userId);
-        return ResponseEntity.ok().body(folderService.getFolderList(userId));
+    public ResponseEntity<List<FolderResponseDto>> getFolderList(final @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        log.info("[FolderController] getFolderList {} called", principalDetails.getUserId());
+        return ResponseEntity.ok().body(folderService.getFolderList(principalDetails.getUserId()));
     }
 
     @GetMapping("/share")
-    public ResponseEntity<FolderShareResponseDto> createShareLink(final @AuthenticationPrincipal Long userId, final @RequestBody FolderShareDto folderShareDto) {
-        log.info("[FolderController] createShareLink {} called", userId);
-        return ResponseEntity.ok().body(folderService.createShareLink(userId, folderShareDto));
+    public ResponseEntity<FolderShareResponseDto> createShareLink(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody FolderShareDto folderShareDto) {
+        log.info("[FolderController] createShareLink {} called", principalDetails.getUserId());
+        return ResponseEntity.ok().body(folderService.createShareLink(principalDetails.getUserId(), folderShareDto));
     }
 
     @GetMapping("/share/copy/{folderId}")
-    public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal Long userId, final @PathVariable Long folderId) {
-        log.info("[FolderController] copyFolder {} called", userId);
-        folderService.copyFolder(userId, folderId);
+    public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId) {
+        log.info("[FolderController] copyFolder {} called", principalDetails.getUserId());
+        folderService.copyFolder(principalDetails.getUserId(), folderId);
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
     /*

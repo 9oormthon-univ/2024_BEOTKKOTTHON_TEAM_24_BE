@@ -41,6 +41,7 @@ public class CustomReminderRepository {
         List<ReminderQuestionQueryDto> results = queryFactory
                 .select(Projections.fields(ReminderQuestionQueryDto.class,
                         reminder.reminderQuestion.reminderQuestion.as("reminderQuestion"),
+                        reminder.reminderQuestion.updatedAt.as("reminderUpdatedAt"),
                         insight.insightId.as("insightId"),
                         reminder.reminderId.as("reminderId"),
                         insight.insightTitle.as("insightTitle"),
@@ -69,8 +70,7 @@ public class CustomReminderRepository {
         return queryFactory
                 .selectFrom(reminder)
                 .orderBy(reminder.lastRemindedAt.asc())
-                .where(reminder.isEnable.isTrue().and(insight.folder.user.userId.eq(userId)))
-                .join(reminder.insight, insight)
+                .where(reminder.isEnable.isTrue().and(reminder.insight.folder.user.userId.eq(userId)))
                 .limit(5)
                 .fetch();
     }
