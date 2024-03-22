@@ -49,6 +49,25 @@ public class InsightService {
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
 
+    public List<InsightSimpleResponseDto> getInsightListByFolderAndTag(Long userId, Long folderId, String tag) {
+        // 폴더 ID로 Insight 리스트 조회
+        List<Insight> insightList = customInsightRepository.findByInsightFolderId(folderId).orElseGet(Collections::emptyList);
+
+        // Insight 리스트에서 각 Insight의 hashTagList를 확인하여 주어진 태그를 부분적으로 포함하는 Insight만 필터링
+        List<InsightSimpleResponseDto> filteredInsightList = insightList.stream()
+                .filter(insight -> insight.getHashTagList().stream()
+                        .anyMatch(hashTag -> hashTag.getHashTagName().toLowerCase().contains(tag.toLowerCase())))
+                .map(insight -> new InsightSimpleResponseDto(
+                        insight.getInsightId(),
+                        insight.getInsightMainImage(),
+                        insight.getInsightTitle(),
+                        insight.getInsightSummary(),
+                        insight.getHashTagList().stream().map(HashTag::getHashTagName).collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+
+        return filteredInsightList;
+    }
     public Boolean deleteInsight(Long insightId){
 
         Insight insight = insightRepository.findByInsightId(insightId).orElseThrow(() -> new IllegalArgumentException("insight not found"));
