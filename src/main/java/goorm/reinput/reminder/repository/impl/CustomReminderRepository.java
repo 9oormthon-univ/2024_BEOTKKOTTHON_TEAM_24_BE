@@ -34,8 +34,10 @@ public class CustomReminderRepository {
         this.queryFactory = new JPAQueryFactory(this.em);
     }
     //가장 읽은 오래된 리마인더 5개만 조회, insight와 reminder question join
-    public List<ReminderQuestionQueryDto> findOldestReminderDto(Long userId) {
-        // 해당 user의 reminder 중 가장 오래된 5개를 조회
+    public List<ReminderQuestionQueryDto> findOldestReminderDto(List<Long> reminderIds){
+        if(reminderIds.isEmpty()){
+            return Collections.emptyList();
+        }
         List<ReminderQuestionQueryDto> results = queryFactory
                 .select(Projections.fields(ReminderQuestionQueryDto.class,
                         reminder.reminderQuestion.reminderQuestion.as("reminderQuestion"),
@@ -47,9 +49,8 @@ public class CustomReminderRepository {
                 ))
                 .from(reminder)
                 .join(reminder.insight, insight)
-                .where(insight.folder.user.userId.eq(userId))
+                .where(reminder.reminderId.in(reminderIds))
                 .orderBy(reminder.lastRemindedAt.asc())
-                .limit(5)
                 .fetch();
         results.forEach(dto -> {
             List<String> tags = queryFactory
@@ -61,6 +62,7 @@ public class CustomReminderRepository {
         });
 
         return results;
+
     }
 
     public List<Reminder> findOldestReminders(Long userId) {
@@ -85,16 +87,27 @@ public class CustomReminderRepository {
                 .selectFrom(reminder)
                 .join(reminder.reminderDate, reminderDate)
                 .join(reminder.insight, insight)
-                .where(reminder.isEnable.isTrue().and(insight.folder.user.userId.eq(userId))
-                        .and(reminderDate.remindType.eq(RemindType.DEFAULT)
-                                .and(reminder.lastRemindedAt.after(LocalDate.now().minusDays(1).atStartOfDay())
-                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusWeeks(1).atStartOfDay()))
-                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusMonths(1).atStartOfDay()))))
-                        .or(reminderDate.remindType.eq(RemindType.WEEK)
-                                .and(reminderDate.remindDays.contains(todayDayOfWeek.getValue())))
-                        .or(reminderDate.remindType.eq(RemindType.MONTH)
-                                .and(reminderDate.remindDays.contains(todayMonthDay))))
-                .fetch();
+                .where(reminder.isEnable.isTrue()
+                        .and(insight.folder.user.userId.eq(userId))
+                        .and(
+                                reminderDate.remindType.eq(RemindType.DEFAULT)
+                                        .and(
+                                                reminder.lastRemindedAt.after(LocalDate.now().minusDays(1).atStartOfDay())
+                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusWeeks(1).atStartOfDay()))
+                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusMonths(1).atStartOfDay()))
+                                        )
+                                        .or(
+                                                reminderDate.remindType.eq(RemindType.WEEK)
+                                                        .and(reminderDate.remindDays.contains(todayDayOfWeek.getValue()))
+                                                        .and(insight.folder.user.userId.eq(userId))
+                                        )
+                                        .or(
+                                                reminderDate.remindType.eq(RemindType.MONTH)
+                                                        .and(reminderDate.remindDays.contains(todayMonthDay))
+                                                        .and(insight.folder.user.userId.eq(userId))
+                                        )
+                        )
+                ).fetch();
 
     }
 }

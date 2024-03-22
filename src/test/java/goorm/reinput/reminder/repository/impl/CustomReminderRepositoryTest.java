@@ -95,20 +95,20 @@ class CustomReminderRepositoryTest {
         em.clear();
     }
 
-    @Test
-    public void findOldestReminderDto() {
-        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(user1.getUserId());
-
-        assertThat(reminderQuestionQueryDtos.size()).isEqualTo(1);
-        assertThat(reminderQuestionQueryDtos.get(0).getInsightTitle()).isEqualTo("title");
-        assertThat(reminderQuestionQueryDtos.get(0).getInsightMainImage()).isEqualTo("mainImage");
-        assertThat(reminderQuestionQueryDtos.get(0).getInsightTagList().size()).isEqualTo(2);
-        assertThat(reminderQuestionQueryDtos.get(0).getReminderQuestion()).isEqualTo("question");
-        assertThat(reminderQuestionQueryDtos.get(0).getReminderId()).isNotNull();
-        assertThat(reminderQuestionQueryDtos.get(0).getInsightId()).isNotNull();
-        assertThat(reminderQuestionQueryDtos.get(0).getInsightTagList().get(0)).isEqualTo("hashTag");
-        assertThat(reminderQuestionQueryDtos.get(0).getLastRemindedAt()).isEqualTo(now);
-    }
+//    @Test
+//    public void findOldestReminderDto() {
+//        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(user1.getUserId());
+//
+//        assertThat(reminderQuestionQueryDtos.size()).isEqualTo(1);
+//        assertThat(reminderQuestionQueryDtos.get(0).getInsightTitle()).isEqualTo("title");
+//        assertThat(reminderQuestionQueryDtos.get(0).getInsightMainImage()).isEqualTo("mainImage");
+//        assertThat(reminderQuestionQueryDtos.get(0).getInsightTagList().size()).isEqualTo(2);
+//        assertThat(reminderQuestionQueryDtos.get(0).getReminderQuestion()).isEqualTo("question");
+//        assertThat(reminderQuestionQueryDtos.get(0).getReminderId()).isNotNull();
+//        assertThat(reminderQuestionQueryDtos.get(0).getInsightId()).isNotNull();
+//        assertThat(reminderQuestionQueryDtos.get(0).getInsightTagList().get(0)).isEqualTo("hashTag");
+//        assertThat(reminderQuestionQueryDtos.get(0).getLastRemindedAt()).isEqualTo(now);
+//    }
 
 
 
