@@ -1,14 +1,17 @@
 package goorm.reinput.reminder.controller;
 
 import goorm.reinput.global.auth.PrincipalDetails;
-import goorm.reinput.reminder.domain.dto.ReminderAnswerReqDto;
-import goorm.reinput.reminder.domain.dto.ReminderQuestionResponseDto;
+import goorm.reinput.reminder.domain.dto.req.ReminderAnswerReqDto;
+import goorm.reinput.reminder.domain.dto.req.ReminderCalenderReqDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderAnswerResDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderCalenderResDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderQuestionResponseDto;
 import goorm.reinput.reminder.service.ReminderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,9 +29,14 @@ public class ReminderController {
     }
 
     @PostMapping("/answer")
-    public ResponseEntity<Void> answerReminderQuestion(final @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody ReminderAnswerReqDto reqDto){
+    public ResponseEntity<ReminderAnswerResDto> answerReminderQuestion(final @AuthenticationPrincipal PrincipalDetails principalDetails,final @Valid @RequestBody ReminderAnswerReqDto reqDto){
         log.info("[ReminderController] answerReminderQuestion");
-        reminderService.answerReminderQuestion(principalDetails.getUserId(), reqDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(reminderService.answerReminderQuestion(principalDetails.getUserId(), reqDto));
+    }
+
+    @PostMapping("/calendar")
+    public ResponseEntity<ReminderCalenderResDto> getReminderCalendar(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody ReminderCalenderReqDto reqDto){
+        log.info("[ReminderController] getReminderCalendar");
+        return ResponseEntity.ok(reminderService.getReminderCalender(principalDetails.getUserId(), reqDto));
     }
 }

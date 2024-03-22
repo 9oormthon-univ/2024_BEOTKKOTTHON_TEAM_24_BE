@@ -1,4 +1,4 @@
-package goorm.reinput.reminder.domain.dto;
+package goorm.reinput.reminder.domain.dto.req;
 
 import lombok.Builder;
 import lombok.Getter;
