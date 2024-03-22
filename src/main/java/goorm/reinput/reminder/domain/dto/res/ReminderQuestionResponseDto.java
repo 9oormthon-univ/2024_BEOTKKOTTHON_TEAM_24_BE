@@ -1,5 +1,6 @@
-package goorm.reinput.reminder.domain.dto;
+package goorm.reinput.reminder.domain.dto.res;
 
+import goorm.reinput.reminder.domain.dto.ReminderQuestionDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

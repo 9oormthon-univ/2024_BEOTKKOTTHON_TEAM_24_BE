@@ -2,10 +2,11 @@ package goorm.reinput.reminder.service;
 
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderQuestion;
-import goorm.reinput.reminder.domain.dto.ReminderAnswerReqDto;
+import goorm.reinput.reminder.domain.dto.req.ReminderAnswerReqDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionQueryDto;
-import goorm.reinput.reminder.domain.dto.ReminderQuestionResponseDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderAnswerResDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderQuestionResponseDto;
 import goorm.reinput.reminder.repository.QuestionRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
@@ -71,7 +72,7 @@ public class ReminderService {
 
     }
 
-    public Long answerReminderQuestion(Long userId, ReminderAnswerReqDto reminderAnswer){
+    public ReminderAnswerResDto answerReminderQuestion(Long userId, ReminderAnswerReqDto reminderAnswer){
         log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderId());
 
         Reminder reminder = reminderRepository.findById(reminderAnswer.getReminderId()).orElseThrow(() -> new IllegalArgumentException("reminder not found"));
@@ -84,9 +85,12 @@ public class ReminderService {
 
         ReminderQuestion reminderQuestion1 = reminderQuestionRepository.save(newQuestion);
 
-        return reminderQuestion1.getReminder().getInsight().getInsightId();
+        return ReminderAnswerResDto.builder()
+                .insightId(reminderQuestion1.getReminder().getInsight().getInsightId())
+                .build();
 
     }
+
 
 
 }
