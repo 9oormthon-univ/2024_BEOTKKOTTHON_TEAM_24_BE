@@ -8,7 +8,6 @@ import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import goorm.reinput.insight.service.InsightService;
 import goorm.reinput.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -32,7 +31,7 @@ public class InsightController {
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PostMapping()
-    public void saveInsight(@Parameter(hidden = true) final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
+    public void saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
         log.info("[InsightController] saveInsight {} called", principalDetails.getUserId());
         insightService.saveInsight(principalDetails.getUserId(), insightCreateDto);
     }
@@ -40,7 +39,7 @@ public class InsightController {
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/{insightId}")
-    public ResponseEntity<InsightResponseDto> getInsightDetail(@Parameter(hidden = true) final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
+    public ResponseEntity<InsightResponseDto> getInsightDetail(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
         log.info("[InsightController] getInsightDetail {} called", principalDetails.getUserId());
 
         // 인사이트 리스트 반환
@@ -68,10 +67,11 @@ public class InsightController {
     @Operation(summary = "인사이트 삭제", description = "유저가 인사이트를 삭제할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @DeleteMapping("/{insightId}")
-    public Boolean deleteInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
+    public ResponseEntity<Boolean> deleteInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
         Long userId =  principalDetails.getUserId();
         log.info("[InsightController] deleteInsight userId = {}, insightId = {} called", userId, insightId);
-        return insightService.deleteInsight(insightId);
+        return ResponseEntity.ok().body(insightService.deleteInsight(insightId));
+
     }
 
     @Operation(summary = "폴더 내 인사이트 태그로 검색하기", description = "폴더 내에서 검색 시 해당 검색어가 포함된 태그를 가진 모든 인사이트를 반환합니다")
@@ -83,4 +83,12 @@ public class InsightController {
         return ResponseEntity.ok().body(insightService.getInsightListByFolderAndTag(userId, folderId, tag));
     }
 
+    @Operation(summary = "인사이트 링크 대표 이미지 제공", description = "인사이트 첫 등록 시, 링크를 입력하면 해당 링크의 대표 이미지를 반환하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @GetMapping("/ogimage")
+    public ResponseEntity<String> getMainImage(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestParam("url") String url) {
+        Long userId =  principalDetails.getUserId();
+        log.info("[InsightController] getMainImage {} called, url = {}", userId, url);
+        return ResponseEntity.ok().body(insightService.getMainImage(userId, url));
+    }
 }

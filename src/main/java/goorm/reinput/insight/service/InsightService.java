@@ -25,8 +25,13 @@ import goorm.reinput.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +53,20 @@ public class InsightService {
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
+
+    @Transactional
+    public String getMainImage(Long userId, String url) {
+        try {
+            Document doc = Jsoup.connect(url).get();
+            Elements metaOgImage = doc.select("meta[property=og:image]");
+            if (!metaOgImage.isEmpty()) {
+                return metaOgImage.first().attr("content");
+            }
+        } catch (Exception e) {
+            log.error("Error while fetching main image from URL: {}", url, e);
+        }
+        return "notExist";
+    }
 
     public List<InsightSimpleResponseDto> getInsightListByFolderAndTag(Long userId, Long folderId, String tag) {
         // 폴더 ID로 Insight 리스트 조회
