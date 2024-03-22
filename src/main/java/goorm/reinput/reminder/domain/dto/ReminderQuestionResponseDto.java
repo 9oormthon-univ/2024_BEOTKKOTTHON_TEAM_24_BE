@@ -10,10 +10,10 @@ import java.util.List;
 @NoArgsConstructor
 public class ReminderQuestionResponseDto {
     private boolean todayClear;
-    private List<ReminderQuestionQueryDto> reminderQuestionList;
+    private List<ReminderQuestionDto> reminderQuestionList;
 
     @Builder
-    public ReminderQuestionResponseDto(boolean todayClear, List<ReminderQuestionQueryDto> reminderQuestionList) {
+    public ReminderQuestionResponseDto(boolean todayClear, List<ReminderQuestionDto> reminderQuestionList) {
         this.todayClear = todayClear;
         this.reminderQuestionList = reminderQuestionList;
     }

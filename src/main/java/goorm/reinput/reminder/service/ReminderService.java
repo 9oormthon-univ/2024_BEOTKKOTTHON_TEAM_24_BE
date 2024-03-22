@@ -2,6 +2,8 @@ package goorm.reinput.reminder.service;
 
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderQuestion;
+import goorm.reinput.reminder.domain.dto.ReminderAnswerReqDto;
+import goorm.reinput.reminder.domain.dto.ReminderQuestionDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionQueryDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionResponseDto;
 import goorm.reinput.reminder.repository.QuestionRepository;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,15 +44,49 @@ public class ReminderService {
 
         return reminders.stream().map(Reminder::getReminderId).toList();
     }
-//    private ReminderQuestionResponseDto getOlderReminder(Long userId){
-//        log.info("[ReminderService] getOlderReminder {}", userId);
-//
-//        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(makeReminderQuestionList(userId));
-//
-//
-//
-//        //reminder reminderQuestion 의 update 시간이 오늘이 아니면 false
-//
-//    }
+    public ReminderQuestionResponseDto getOlderReminder(Long userId){
+        log.info("[ReminderService] getOlderReminder {}", userId);
+
+        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(makeReminderQuestionList(userId));
+
+        /*reminder reminderQuestion 의 update 시간이 하나라도 오늘이 아니면
+        ReminderQuestionResponseDto todayClear false
+         */
+        boolean todayClear = reminderQuestionQueryDtos.stream()
+                .anyMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
+
+        return ReminderQuestionResponseDto.builder()
+                .todayClear(todayClear)
+                .reminderQuestionList(reminderQuestionQueryDtos.stream().map(dto ->
+                                ReminderQuestionDto.builder()
+                                        .reminderQuestion(dto.getReminderQuestion())
+                                        .insightId(dto.getInsightId())
+                                        .reminderId(dto.getReminderId())
+                                        .insightTitle(dto.getInsightTitle())
+                                        .insightMainImage(dto.getInsightMainImage())
+                                        .insightTagList(dto.getInsightTagList())
+                                        .build())
+                        .collect(Collectors.toList()))
+                .build();
+
+    }
+
+    public Long answerReminderQuestion(Long userId, ReminderAnswerReqDto reminderAnswer){
+        log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderId());
+
+        Reminder reminder = reminderRepository.findById(reminderAnswer.getReminderId()).orElseThrow(() -> new IllegalArgumentException("reminder not found"));
+        ReminderQuestion reminderQuestion = reminder.getReminderQuestion();
+        ReminderQuestion newQuestion = ReminderQuestion.builder()
+                .reminder(reminder)
+                .reminderQuestion(reminderQuestion.getReminderQuestion())
+                .reminderAnswer(reminderAnswer.getReminderAnswer())
+                .build();
+
+        ReminderQuestion reminderQuestion1 = reminderQuestionRepository.save(newQuestion);
+
+        return reminderQuestion1.getReminder().getInsight().getInsightId();
+
+    }
+
 
 }

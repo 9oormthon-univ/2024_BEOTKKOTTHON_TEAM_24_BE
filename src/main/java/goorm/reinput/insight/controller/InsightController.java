@@ -31,19 +31,19 @@ public class InsightController {
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PostMapping()
-    public void saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
-       Long userId =  principalDetails.getUserId();
-        log.info("[InsightController] saveInsight {} called", userId);
-        insightService.saveInsight(userId, insightCreateDto);
+    public void saveInsight(@Parameter(hidden = true) final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
+        log.info("[InsightController] saveInsight {} called", principalDetails.getUserId());
+        insightService.saveInsight(principalDetails.getUserId(), insightCreateDto);
     }
 
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
-    @GetMapping("/{insightId}")
-    public ResponseEntity<InsightResponseDto> getInsightDetail(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
-        Long userId =  principalDetails.getUserId();
-        log.info("[InsightController] getInsightDetail userId = {}, insightId = {} called", userId, insightId);
-        return ResponseEntity.ok().body(insightService.getInsightDetail(userId, insightId));
+    @GetMapping()
+    public ResponseEntity<InsightResponseDto> getInsightDetail(@Parameter(hidden = true) final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
+        log.info("[InsightController] getInsightDetail {} called", principalDetails.getUserId());
+
+        // 인사이트 리스트 반환
+        return ResponseEntity.ok().body(insightService.getInsightDetail(principalDetails.getUserId(), insightId));
     }
 
     // 3. 폴더 내 인사이트 리스트 가져오기
