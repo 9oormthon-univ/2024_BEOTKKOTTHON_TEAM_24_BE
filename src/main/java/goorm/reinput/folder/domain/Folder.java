@@ -1,5 +1,6 @@
 package goorm.reinput.folder.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.user.domain.User;
@@ -25,7 +26,7 @@ public class Folder extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-
+    @JsonManagedReference
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Insight> insightList;
     @Builder

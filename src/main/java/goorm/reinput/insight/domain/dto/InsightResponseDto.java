@@ -22,8 +22,8 @@ public class InsightResponseDto {
     private String insightMemo;
     private String insightSource;
     private Integer viewCount;
-    private List<HashTag> hashTagList;
-    private List<InsightImage> insightImageList;
+    private List<String> hashTagList;
+    private List<String> insightImageList;
     private boolean isEnable;
     private RemindType remindType;
     private List<Integer> remindDays;
