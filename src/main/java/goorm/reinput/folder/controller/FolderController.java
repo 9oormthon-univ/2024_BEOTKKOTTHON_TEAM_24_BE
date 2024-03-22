@@ -28,7 +28,8 @@ public class FolderController {
     }
 
     @GetMapping("/share")
-    public ResponseEntity<FolderShareResponseDto> createShareLink(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody FolderShareDto folderShareDto) {
+    public ResponseEntity<FolderShareResponseDto> createShareLink(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long folderId, @RequestParam boolean copyable) {
+        FolderShareDto folderShareDto = new FolderShareDto(folderId, copyable);
         log.info("[FolderController] createShareLink {} called", principalDetails.getUserId());
         return ResponseEntity.ok().body(folderService.createShareLink(principalDetails.getUserId(), folderShareDto));
     }

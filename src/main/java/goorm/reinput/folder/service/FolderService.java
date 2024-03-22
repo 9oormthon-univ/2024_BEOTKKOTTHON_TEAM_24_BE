@@ -8,6 +8,7 @@ import goorm.reinput.folder.domain.dto.FolderShareDto;
 import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
+import goorm.reinput.global.util.AESUtil;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
@@ -174,9 +175,14 @@ public class FolderService {
             throw new IllegalArgumentException("folder not found with id " + folderShareDto.getFolderId());
         }
 
-        //todo : create share link
+        String toEncrypt = folderShareDto.getFolderId() + "@" + folderShareDto.isCopyable();
+        String encryptedString = AESUtil.encrypt(toEncrypt);
+
+        //TODO 도메인으로 변경요망
+        String baseURL = "http://localhost:8080";
+
         return FolderShareResponseDto.builder()
-                .url(String.format("http://reinput.online/folder/share/%d/%s", folderShareDto.getFolderId(), folderShareDto.isCopyable()))
+                .url(String.format("%s/insight/share?token=%s", baseURL, encryptedString))
                 .build();
     }
 

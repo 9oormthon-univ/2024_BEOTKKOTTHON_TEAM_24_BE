@@ -1,10 +1,7 @@
 package goorm.reinput.insight.controller;
 
 import goorm.reinput.global.auth.PrincipalDetails;
-import goorm.reinput.insight.domain.dto.InsightCreateDto;
-import goorm.reinput.insight.domain.dto.InsightModifyDto;
-import goorm.reinput.insight.domain.dto.InsightResponseDto;
-import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
+import goorm.reinput.insight.domain.dto.*;
 import goorm.reinput.insight.service.InsightService;
 import goorm.reinput.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +23,6 @@ import java.util.List;
 public class InsightController {
 
     private final InsightService insightService;
-    private final UserService userService;
 
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
@@ -50,7 +46,7 @@ public class InsightController {
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/folder/{folderId}")
     public ResponseEntity<List<InsightSimpleResponseDto>> getInsightList(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId) {
-        Long userId =  principalDetails.getUserId();
+        Long userId = principalDetails.getUserId();
         log.info("[InsightController] getInsightList userId = {}, folderId = {} called", userId, folderId);
         return ResponseEntity.ok().body(insightService.getInsightList(userId, folderId));
     }
@@ -59,7 +55,7 @@ public class InsightController {
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PutMapping()
     public void modifyInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightModifyDto insightModifyDto) {
-        Long userId =  principalDetails.getUserId();
+        Long userId = principalDetails.getUserId();
         log.info("[InsightController] modifyInsight {} called", userId);
         insightService.modifyInsight(userId, insightModifyDto);
     }
@@ -68,7 +64,7 @@ public class InsightController {
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @DeleteMapping("/{insightId}")
     public ResponseEntity<Boolean> deleteInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
-        Long userId =  principalDetails.getUserId();
+        Long userId = principalDetails.getUserId();
         log.info("[InsightController] deleteInsight userId = {}, insightId = {} called", userId, insightId);
         return ResponseEntity.ok().body(insightService.deleteInsight(insightId));
 
@@ -78,7 +74,7 @@ public class InsightController {
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/search/{folderId}/{tag}")
     public ResponseEntity<List<InsightSimpleResponseDto>> getInsightList(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId, final @PathVariable String tag) {
-        Long userId =  principalDetails.getUserId();
+        Long userId = principalDetails.getUserId();
         log.info("[InsightController] getInsightList userId = {}, folderId = {}, tag = {} called", userId, folderId, tag);
         return ResponseEntity.ok().body(insightService.getInsightListByFolderAndTag(userId, folderId, tag));
     }
@@ -87,8 +83,18 @@ public class InsightController {
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/ogimage")
     public ResponseEntity<String> getMainImage(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestParam("url") String url) {
-        Long userId =  principalDetails.getUserId();
+        Long userId = principalDetails.getUserId();
         log.info("[InsightController] getMainImage {} called, url = {}", userId, url);
         return ResponseEntity.ok().body(insightService.getMainImage(userId, url));
     }
+
+    @Operation(summary = "공유된 폴더 url 접속하기", description = "유저의 폴더 내 인사이트 리스트를 볼 수 있는 url에 접속합니다.")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @GetMapping("/share")
+    public ResponseEntity<List<InsightShareResponseDto>> accessSharedFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam("token") String token) {
+        Long userId = principalDetails.getUserId();
+        log.info("[InsightController] accessSharedFolder {} called", userId);
+        return ResponseEntity.ok().body(insightService.accessSharedFolder(userId, token));
+    }
+
 }
