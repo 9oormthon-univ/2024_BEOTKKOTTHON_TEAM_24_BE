@@ -5,6 +5,7 @@ import goorm.reinput.reminder.domain.ReminderQuestion;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionQueryDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionResponseDto;
 import goorm.reinput.reminder.repository.QuestionRepository;
+import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
 import goorm.reinput.reminder.repository.impl.CustomReminderRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,9 @@ public class ReminderService {
     private final ReminderRepository reminderRepository;
     private final CustomReminderRepository customReminderRepository;
     private final QuestionRepository questionRepository;
+    private final ReminderQuestionRepository reminderQuestionRepository;
 
-    private void makeReminderQuestionList(Long userId) {
+    private List<Long> makeReminderQuestionList(Long userId) {
         log.info("makeReminderQuestionList start");
         List<Reminder> reminders = customReminderRepository.findOldestReminders(userId);
 
@@ -33,18 +35,20 @@ public class ReminderService {
                         .reminder(reminder)
                         .reminderQuestion(questionRepository.findRandomQuestion().getQuestion())
                         .build();
+                reminderQuestionRepository.save(question);
             }
         }
 
+        return reminders.stream().map(Reminder::getReminderId).toList();
     }
-//todo: get Older reminer
 //    private ReminderQuestionResponseDto getOlderReminder(Long userId){
+//        log.info("[ReminderService] getOlderReminder {}", userId);
 //
-//        makeReminderQuestionList();
-//
-//        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(userId);
+//        List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(makeReminderQuestionList(userId));
 //
 //
+//
+//        //reminder reminderQuestion 의 update 시간이 오늘이 아니면 false
 //
 //    }
 
