@@ -11,6 +11,7 @@ on:
       - main
     paths:
       - "/**"
+      - "src/**"
       - ".github/workflows/reinput.yml"
 
 jobs:
