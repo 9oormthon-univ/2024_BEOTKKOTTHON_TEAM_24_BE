@@ -39,7 +39,7 @@ public class InsightController {
 
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
-    @GetMapping()
+    @GetMapping("/{insightId}")
     public ResponseEntity<InsightResponseDto> getInsightDetail(@Parameter(hidden = true) final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
         log.info("[InsightController] getInsightDetail {} called", principalDetails.getUserId());
 
@@ -63,5 +63,14 @@ public class InsightController {
         Long userId =  principalDetails.getUserId();
         log.info("[InsightController] modifyInsight {} called", userId);
         insightService.modifyInsight(userId, insightModifyDto);
+    }
+
+    @Operation(summary = "인사이트 삭제", description = "유저가 인사이트를 삭제할 때 사용하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @DeleteMapping("/{insightId}")
+    public Boolean deleteInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long insightId) {
+        Long userId =  principalDetails.getUserId();
+        log.info("[InsightController] deleteInsight userId = {}, insightId = {} called", userId, insightId);
+        return insightService.deleteInsight(insightId);
     }
 }

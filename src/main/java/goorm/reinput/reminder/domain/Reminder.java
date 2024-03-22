@@ -25,10 +25,10 @@ public class Reminder extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Insight insight;
 
-    @OneToOne(mappedBy = "reminder")
+    @OneToOne(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
     private ReminderDate reminderDate;
 
-    @OneToOne(mappedBy = "reminder")
+    @OneToOne(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
     private ReminderQuestion reminderQuestion;
 
     @Builder
