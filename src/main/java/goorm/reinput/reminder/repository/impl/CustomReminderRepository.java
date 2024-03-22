@@ -84,6 +84,7 @@ public class CustomReminderRepository {
 
         return queryFactory
                 .select(reminder.reminderId)
+                .from(reminder)
                 .join(reminder.reminderDate, reminderDate)
                 .join(reminder.insight, insight)
                 .where(reminder.isEnable.isTrue()
@@ -132,7 +133,10 @@ public class CustomReminderRepository {
                     .where(hashTag.insight.insightId.eq(dto.getInsightId()))
                     .fetch();
             dto.setInsightTagList(tags);
-            dto.setTodayRead(dto.getLastRemindedAt().toLocalDate().isEqual(LocalDate.now()));
+            dto.setTodayRead(Optional.ofNullable(dto.getLastRemindedAt())
+                    .map(LocalDateTime::toLocalDate)
+                    .map(date -> date.isEqual(LocalDate.now()))
+                    .orElse(false));
         });
 
         return results;
