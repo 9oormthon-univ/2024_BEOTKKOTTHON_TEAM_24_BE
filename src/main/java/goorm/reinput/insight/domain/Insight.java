@@ -1,5 +1,7 @@
 package goorm.reinput.insight.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import goorm.reinput.reminder.domain.Reminder;
@@ -29,14 +31,17 @@ public class Insight extends BaseTimeEntity {
     private Integer viewCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folderId")
+    @JsonBackReference
     private Folder folder;
 
     @OneToOne(mappedBy = "insight")
     private Reminder reminder;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "insight", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HashTag> hashTagList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "insight", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InsightImage> insightImageList;
 

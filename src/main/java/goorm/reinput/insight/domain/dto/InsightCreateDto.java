@@ -1,7 +1,5 @@
 package goorm.reinput.insight.domain.dto;
 
-import goorm.reinput.insight.domain.HashTag;
-import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.reminder.domain.RemindType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +18,9 @@ public class InsightCreateDto {
     private String insightMemo;
     private String insightSource;
     private Integer viewCount;
-    private List<HashTag> hashTagList;
-    private List<InsightImage> insightImageList;
-    private boolean isEnable;
+    private List<String> hashTagList;
+    private List<String> insightImageList;
+    private boolean enable;
     private RemindType remindType;
     private List<Integer> remindDays;
     private String folderName;
