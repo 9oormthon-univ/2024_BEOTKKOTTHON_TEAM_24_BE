@@ -146,5 +146,6 @@ public class ReminderServiceTest {
 
         // then
         assertThat(resDto.getRemindTotal()).isGreaterThanOrEqualTo(1);
+        assertThat(resDto.getRemindInsightList().get(0).getInsightTitle()).isEqualTo("insightTitle");
     }
 }
