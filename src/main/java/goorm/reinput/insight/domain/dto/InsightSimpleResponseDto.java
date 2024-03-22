@@ -18,12 +18,4 @@ public class InsightSimpleResponseDto {
     private String insightTitle;
     private String insightSummary;
     private List<String> hashTagList;
-    @Setter
-    private transient int titlePriority;
-    @Setter
-    private transient int summaryPriority;
-    @Setter
-    private transient int tagsPriority;
-    @Setter
-    private transient int memoPriority;
 }

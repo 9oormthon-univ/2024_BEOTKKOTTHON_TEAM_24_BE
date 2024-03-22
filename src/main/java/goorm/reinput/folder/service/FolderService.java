@@ -2,10 +2,7 @@ package goorm.reinput.folder.service;
 
 import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
-import goorm.reinput.folder.domain.dto.FolderDto;
-import goorm.reinput.folder.domain.dto.FolderResponseDto;
-import goorm.reinput.folder.domain.dto.FolderShareDto;
-import goorm.reinput.folder.domain.dto.FolderShareResponseDto;
+import goorm.reinput.folder.domain.dto.*;
 import goorm.reinput.folder.repository.CustomFolderRepository;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.insight.domain.HashTag;
@@ -184,19 +181,29 @@ public class FolderService {
     }
 
 
-    public List<InsightSimpleResponseDto> sortInsights(List<InsightSimpleResponseDto> insights) {
+    public List<InsightSimpleResponseDto> findAllInsights(Long userId, String keyword) {
         //todo: insight로 책임 이동
-        // Comparator를 정의하여 제목, 요약, 태그, 메모 순으로 정렬
-        Comparator<InsightSimpleResponseDto> comparator = Comparator
-                .comparingInt(InsightSimpleResponseDto::getTitlePriority)
-                .thenComparingInt(InsightSimpleResponseDto::getSummaryPriority)
-                .thenComparingInt(InsightSimpleResponseDto::getTagsPriority)
-                .thenComparingInt(InsightSimpleResponseDto::getMemoPriority);
+        log.info("[FolderService] findAllInsights {} called", userId);
+        List<InsightSearchDto> insightSearchDtos = customFolderRepository.searchInsight(customFolderRepository.searchInsightInFolder(userId, keyword));
 
-        // 정의된 Comparator를 사용하여 리스트 정렬
-        return insights.stream()
-                .sorted(comparator)
+        // Comparator를 정의하여 제목, 요약, 태그, 메모 순으로 정렬
+        insightSearchDtos.forEach(insightSearchDto -> insightSearchDto.calculateMatchScores(keyword));
+
+        List<InsightSearchDto> sortedInsightSearchDtos = insightSearchDtos.stream()
+                .sorted(Comparator.comparingInt(InsightSearchDto::getTitleMatchScore).reversed()
+                        .thenComparingInt(InsightSearchDto::getSummaryMatchScore).reversed()
+                        .thenComparingInt(InsightSearchDto::getTagMatchScore).reversed()
+                        .thenComparingInt(InsightSearchDto::getMemoMatchScore).reversed())
+                .toList();
+
+        return sortedInsightSearchDtos.stream().map(insightSearchDto -> InsightSimpleResponseDto.builder()
+                .insightId(insightSearchDto.getInsightId())
+                .insightMainImage(insightSearchDto.getInsightMainImage())
+                .insightTitle(insightSearchDto.getInsightTitle())
+                .insightSummary(insightSearchDto.getInsightSummary())
+                .hashTagList(insightSearchDto.getHashTagList())
+                .build())
                 .collect(Collectors.toList());
-    }
+        }
 
 }

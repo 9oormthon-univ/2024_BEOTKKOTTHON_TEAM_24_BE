@@ -3,6 +3,7 @@ package goorm.reinput.folder.controller;
 import goorm.reinput.folder.domain.dto.*;
 import goorm.reinput.folder.service.FolderService;
 import goorm.reinput.global.auth.PrincipalDetails;
+import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
@@ -40,11 +41,10 @@ public class FolderController {
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
     /*
-    //todo : 인사이트 전체 검색
     @GetMapping("/search")
-    public ResponseEntity<List<InsightResponseDto>> searchInsight(final @AuthenticationPrincipal Long userId, final @RequestParam String keyword) {
+    public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal Long userId, final @RequestBody SearchReqDto searchReqDto) {
         log.info("[FolderController] searchInsight {} called", userId);
-        return ResponseEntity.ok().body(folderService.searchInsight(userId, keyword));
+        return ResponseEntity.ok().body(folderService.findAllInsights(userId, keyword));
     }*/
 
     @PostMapping

@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import goorm.reinput.folder.domain.dto.FolderDto;
 import goorm.reinput.folder.domain.dto.FolderResponseDto;
+import goorm.reinput.folder.domain.dto.InsightSearchDto;
 import goorm.reinput.insight.domain.QHashTag;
 import goorm.reinput.insight.domain.dto.InsightResponseDto;
 import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
@@ -99,15 +100,16 @@ public class CustomFolderRepository {
                 .fetch();
     }
 
-    public List<InsightSimpleResponseDto> searchInsight(List<Long> insightIds) {
+    public List<InsightSearchDto> searchInsight(List<Long> insightIds) {
         // Insight ID 리스트를 이용하여 각 Insight에 대한 간단한 정보 조회
         //todo : insight로 책임 분리
-        List<InsightSimpleResponseDto> insights = queryFactory
-                .select(Projections.fields(InsightSimpleResponseDto.class,
+        List<InsightSearchDto> insights = queryFactory
+                .select(Projections.fields(InsightSearchDto.class,
                         insight.insightId,
                         insight.insightMainImage,
                         insight.insightTitle,
-                        insight.insightSummary))
+                        insight.insightSummary,
+                        insight.insightMemo))
                 .from(insight)
                 .where(insight.insightId.in(insightIds))
                 .fetch();
@@ -121,11 +123,12 @@ public class CustomFolderRepository {
                     .where(hashTag.insight.insightId.eq(dto.getInsightId()))
                     .fetch();
 
-            return InsightSimpleResponseDto.builder()
+            return InsightSearchDto.builder()
                     .insightId(dto.getInsightId())
                     .insightMainImage(dto.getInsightMainImage())
                     .insightTitle(dto.getInsightTitle())
                     .insightSummary(dto.getInsightSummary())
+                    .insightMemo(dto.getInsightMemo())
                     .hashTagList(tags) // 태그 리스트 설정
                     .build();
         }).collect(Collectors.toList());
