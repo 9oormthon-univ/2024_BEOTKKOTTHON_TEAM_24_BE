@@ -5,7 +5,9 @@ import goorm.reinput.reminder.domain.ReminderQuestion;
 import goorm.reinput.reminder.domain.dto.req.ReminderAnswerReqDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionQueryDto;
+import goorm.reinput.reminder.domain.dto.req.ReminderCalenderReqDto;
 import goorm.reinput.reminder.domain.dto.res.ReminderAnswerResDto;
+import goorm.reinput.reminder.domain.dto.res.ReminderCalenderResDto;
 import goorm.reinput.reminder.domain.dto.res.ReminderQuestionResponseDto;
 import goorm.reinput.reminder.repository.QuestionRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
@@ -14,6 +16,7 @@ import goorm.reinput.reminder.repository.impl.CustomReminderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +31,8 @@ public class ReminderService {
     private final QuestionRepository questionRepository;
     private final ReminderQuestionRepository reminderQuestionRepository;
 
-    private List<Long> makeReminderQuestionList(Long userId) {
+    @Transactional
+    public List<Long> makeReminderQuestionList(Long userId) {
         log.info("makeReminderQuestionList start");
         List<Reminder> reminders = customReminderRepository.findOldestReminders(userId);
 
@@ -71,7 +75,7 @@ public class ReminderService {
                 .build();
 
     }
-
+    @Transactional
     public ReminderAnswerResDto answerReminderQuestion(Long userId, ReminderAnswerReqDto reminderAnswer){
         log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderId());
 
@@ -91,6 +95,10 @@ public class ReminderService {
 
     }
 
+    public ReminderCalenderResDto getReminderCalender(Long userId, ReminderCalenderReqDto reminderCalenderReqDto){
+        log.info("[ReminderService] getReminderCalender userId: {}", userId);
+        return null;
+    }
 
 
 }
