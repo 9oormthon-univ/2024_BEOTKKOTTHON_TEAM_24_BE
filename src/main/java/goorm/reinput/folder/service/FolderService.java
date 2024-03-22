@@ -190,11 +190,9 @@ public class FolderService {
         insightSearchDtos.forEach(insightSearchDto -> insightSearchDto.calculateMatchScores(keyword));
 
         List<InsightSearchDto> sortedInsightSearchDtos = insightSearchDtos.stream()
-                .sorted(Comparator.comparingInt(InsightSearchDto::getTitleMatchScore).reversed()
-                        .thenComparingInt(InsightSearchDto::getSummaryMatchScore).reversed()
-                        .thenComparingInt(InsightSearchDto::getTagMatchScore).reversed()
-                        .thenComparingInt(InsightSearchDto::getMemoMatchScore).reversed())
+                .sorted(Comparator.comparing(InsightSearchDto::getMatchScore).reversed())
                 .toList();
+
 
         return sortedInsightSearchDtos.stream().map(insightSearchDto -> InsightSimpleResponseDto.builder()
                 .insightId(insightSearchDto.getInsightId())

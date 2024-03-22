@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class InsightSearchDto {
     private Long insightId;
     private String insightMainImage;
@@ -16,10 +17,7 @@ public class InsightSearchDto {
     private String insightMemo;
     private List<String> hashTagList;
     // 검색 우선순위를 위한 필드들
-    private transient int titleMatchScore;
-    private transient int summaryMatchScore;
-    private transient int tagMatchScore;
-    private transient int memoMatchScore;
+    private transient int matchScore;
 
     @Builder
     public InsightSearchDto(Long insightId, String insightMainImage, String insightTitle, String insightSummary, String insightMemo, List<String> hashTagList) {
@@ -32,13 +30,29 @@ public class InsightSearchDto {
     }
 
     public void calculateMatchScores(String searchKeyword) {
-        this.titleMatchScore = calculateMatchScore(searchKeyword, this.insightTitle);
-        this.summaryMatchScore = calculateMatchScore(searchKeyword, this.insightSummary);
-        this.tagMatchScore = this.hashTagList.contains(searchKeyword) ? 1 : 0;
-        this.memoMatchScore = calculateMatchScore(searchKeyword, this.insightMemo);
+        String keywordLowerCase = searchKeyword.toLowerCase();
+        // 초기 점수는 0점
+        this.matchScore = 0;
+
+        // 제목에 검색어가 포함되면 8점 추가
+        if (this.insightTitle != null && this.insightTitle.toLowerCase().contains(keywordLowerCase)) {
+            this.matchScore += 8;
+        }
+
+        // 요약에 검색어가 포함되면 4점 추가
+        if (this.insightSummary != null && this.insightSummary.toLowerCase().contains(keywordLowerCase)) {
+            this.matchScore += 4;
+        }
+
+        // 메모에 검색어가 포함되면 1점 추가
+        if (this.insightMemo != null && this.insightMemo.toLowerCase().contains(keywordLowerCase)) {
+            this.matchScore += 1;
+        }
+
+        // 태그 목록 중 하나라도 검색어를 포함하고 있으면 2점 추가
+        if (this.hashTagList != null && this.hashTagList.stream().anyMatch(tag -> tag.toLowerCase().contains(keywordLowerCase))) {
+            this.matchScore += 2;
+        }
     }
 
-    private int calculateMatchScore(String keyword, String target) {
-        return target != null && target.contains(keyword) ? 1 : 0;
-    }
 }
