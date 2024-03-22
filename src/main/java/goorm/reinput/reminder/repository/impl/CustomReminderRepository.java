@@ -75,14 +75,14 @@ public class CustomReminderRepository {
     }
 
     // 리마인드할 인사이트 조회
-    public List<Reminder> findRemindersToNotify(Long userId, LocalDate today) {
+    public List<Long> findRemindersToNotify(Long userId, LocalDate today) {
 
         // 오늘 날짜와 요일
         DayOfWeek todayDayOfWeek = today.getDayOfWeek();
         int todayMonthDay = today.getDayOfMonth();
 
         return queryFactory
-                .selectFrom(reminder)
+                .select(reminder.reminderId)
                 .join(reminder.reminderDate, reminderDate)
                 .join(reminder.insight, insight)
                 .where(reminder.isEnable.isTrue()

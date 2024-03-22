@@ -2,6 +2,8 @@ package goorm.reinput.reminder.service;
 
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderQuestion;
+import goorm.reinput.reminder.domain.dto.ReminderInsightDto;
+import goorm.reinput.reminder.domain.dto.ReminderInsightQueryDto;
 import goorm.reinput.reminder.domain.dto.req.ReminderAnswerReqDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionDto;
 import goorm.reinput.reminder.domain.dto.ReminderQuestionQueryDto;
@@ -97,8 +99,22 @@ public class ReminderService {
 
     public ReminderCalenderResDto getReminderCalender(Long userId, ReminderCalenderReqDto reminderCalenderReqDto){
         log.info("[ReminderService] getReminderCalender userId: {}", userId);
-        return null;
+        List<Long> reminderIds = customReminderRepository.findRemindersToNotify(userId, reminderCalenderReqDto.getRequestDate());
+
+        List<ReminderInsightQueryDto> reminderInsightQueryDtos = customReminderRepository.findReminderInsights(reminderIds);
+
+        return ReminderCalenderResDto.builder()
+                .date(reminderCalenderReqDto.getRequestDate())
+                .remindTotal(reminderInsightQueryDtos.size())
+                .remindRead((int) reminderInsightQueryDtos.stream().filter(ReminderInsightQueryDto::isTodayRead).count())
+                .remindInsightList(reminderInsightQueryDtos.stream().map(dto ->
+                        ReminderInsightDto.builder()
+                                .insightId(dto.getInsightId())
+                                .insightTitle(dto.getInsightTitle())
+                                .insightMainImage(dto.getInsightMainImage())
+                                .insightTagList(dto.getInsightTagList())
+                                .todayRead(dto.isTodayRead())
+                                .build())
+                        .collect(Collectors.toList())).build();
     }
-
-
 }
