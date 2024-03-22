@@ -1,5 +1,6 @@
 package goorm.reinput.insight.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -15,6 +16,7 @@ public class InsightImage extends BaseTimeEntity {
     private Long insightImageId;
     private String insightImageUrl;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Insight insight;
 

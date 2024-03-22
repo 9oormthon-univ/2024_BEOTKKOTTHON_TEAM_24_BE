@@ -1,5 +1,6 @@
 package goorm.reinput.insight.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -14,6 +15,7 @@ public class HashTag extends BaseTimeEntity {
     private Long hashTagId;
     private String hashTagName;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Insight insight;
 

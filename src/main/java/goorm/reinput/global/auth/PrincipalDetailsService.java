@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class PrincipalDetailsService  {
+public class PrincipalDetailsService implements UserDetailsService{
     private final UserRepository userRepository;
 
     public PrincipalDetailsService(UserRepository userRepository) {
@@ -28,6 +28,18 @@ public class PrincipalDetailsService  {
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다. : " + userId));
 
         // 로그 메시지는 예외 처리 이전에 기록될 수 없으므로, 여기서는 예외 발생 후에는 도달할 수 없습니다.
+        log.info("[PrincipalDetailsService] userId : {}", userEntity.getUserId());
+        return new PrincipalDetails(userEntity);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // username을 userId로 간주하고 처리하는 로직 구현
+        // 실제 사용 시 적절한 타입 변환과 예외 처리 필요
+        Long userId = Long.parseLong(username);
+        User userEntity = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
         log.info("[PrincipalDetailsService] userId : {}", userEntity.getUserId());
         return new PrincipalDetails(userEntity);
     }

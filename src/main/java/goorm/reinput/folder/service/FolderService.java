@@ -43,7 +43,6 @@ public class FolderService {
             throw new IllegalArgumentException("userId is null");
         }
 
-
         return customFolderRepository.getFolderList(userId).orElseThrow(() -> {
             log.error("[FolderService] getFolderList failed");
             //todo : exception handling
@@ -180,4 +179,6 @@ public class FolderService {
                 .url(String.format("http://reinput.online/folder/share/%d/%s", folderShareDto.getFolderId(), folderShareDto.isCopyable()))
                 .build();
     }
+
+
 }
