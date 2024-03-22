@@ -11,6 +11,7 @@ import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
+import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.insight.repository.HashTagRepository;
 import goorm.reinput.insight.repository.InsightImageRepository;
@@ -22,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -180,5 +183,20 @@ public class FolderService {
                 .build();
     }
 
+
+    public List<InsightSimpleResponseDto> sortInsights(List<InsightSimpleResponseDto> insights) {
+        //todo: insight로 책임 이동
+        // Comparator를 정의하여 제목, 요약, 태그, 메모 순으로 정렬
+        Comparator<InsightSimpleResponseDto> comparator = Comparator
+                .comparingInt(InsightSimpleResponseDto::getTitlePriority)
+                .thenComparingInt(InsightSimpleResponseDto::getSummaryPriority)
+                .thenComparingInt(InsightSimpleResponseDto::getTagsPriority)
+                .thenComparingInt(InsightSimpleResponseDto::getMemoPriority);
+
+        // 정의된 Comparator를 사용하여 리스트 정렬
+        return insights.stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());
+    }
 
 }

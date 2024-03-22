@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -165,5 +166,13 @@ public class CustomReminderRepository {
                 .fetchOne()).orElse(0L); // count 쿼리는 결과가 단일 숫자이므로 fetchOne() 사용
 
         return count > 0;
+    }
+    //reminder lastView 업데이트
+    public void updateLastView(Long insightId){
+        queryFactory
+                .update(reminder)
+                .set(reminder.lastRemindedAt, LocalDateTime.now())
+                .where(reminder.insight.insightId.eq(insightId))
+                .execute();
     }
 }
