@@ -40,31 +40,31 @@ public class FolderController {
         folderService.copyFolder(principalDetails.getUserId(), folderId);
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
-    /*
+
     @GetMapping("/search")
-    public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal Long userId, final @RequestBody SearchReqDto searchReqDto) {
-        log.info("[FolderController] searchInsight {} called", userId);
-        return ResponseEntity.ok().body(folderService.findAllInsights(userId, keyword));
-    }*/
+    public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody SearchReqDto searchReqDto) {
+        log.info("[FolderController] searchInsight {} called", principalDetails.getUserId());
+        return ResponseEntity.ok().body(folderService.findAllInsights(principalDetails.getUserId(), searchReqDto.getSearch()));
+    }
 
     @PostMapping
-    public ResponseEntity<List<FolderResponseDto>> saveFolder(final @AuthenticationPrincipal Long userId, final @RequestBody FolderCreateDto folderCreateDto) {
-        log.info("[FolderController] saveFolder {} called", userId);
-        folderService.saveFolder(userId, folderCreateDto.getFolderName(), folderCreateDto.getFolderColor());
-        return ResponseEntity.ok().body(folderService.getFolderList(userId));
+    public ResponseEntity<List<FolderResponseDto>> saveFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody FolderCreateDto folderCreateDto) {
+        log.info("[FolderController] saveFolder {} called", principalDetails.getUserId());
+        folderService.saveFolder(principalDetails.getUserId(), folderCreateDto.getFolderName(), folderCreateDto.getFolderColor());
+        return ResponseEntity.ok().body(folderService.getFolderList(principalDetails.getUserId()));
     }
 
     @PatchMapping
-    public ResponseEntity<String> updateFolder(final @AuthenticationPrincipal Long userId, final @RequestBody FolderDto folderDto) {
-        log.info("[FolderController] updateFolder {} called", userId);
-        folderService.updateFolder(userId, folderDto);
+    public ResponseEntity<String> updateFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody FolderDto folderDto) {
+        log.info("[FolderController] updateFolder {} called", principalDetails.getUserId());
+        folderService.updateFolder(principalDetails.getUserId(), folderDto);
         return ResponseEntity.ok().body("success");
     }
 
     @DeleteMapping("/{folderId}")
-    public ResponseEntity<String> deleteFolder(final @AuthenticationPrincipal Long userId, final @PathVariable Long folderId) {
-        log.info("[FolderController] deleteFolder {} called", userId);
-        folderService.deleteFolder(userId, folderId);
+    public ResponseEntity<String> deleteFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId) {
+        log.info("[FolderController] deleteFolder {} called", principalDetails.getUserId());
+        folderService.deleteFolder(principalDetails.getUserId(), folderId);
         return ResponseEntity.ok().body("success");
     }
 
