@@ -3,6 +3,7 @@ package goorm.reinput.insight.domain.dto;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.reminder.domain.RemindType;
+import goorm.reinput.reminder.domain.ReminderQuestion;
 import lombok.*;
 
 import java.util.List;
@@ -29,4 +30,7 @@ public class InsightResponseDto {
     private List<Integer> remindDays;
     private String folderName;
     private Long folderId;
+
+    // 소유자가 볼 경우 리마인더 질문이 보임
+    private List<ReminderQuestion> reminderQuestionList;
 }

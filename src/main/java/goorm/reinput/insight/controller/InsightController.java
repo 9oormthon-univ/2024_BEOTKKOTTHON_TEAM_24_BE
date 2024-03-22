@@ -2,6 +2,7 @@ package goorm.reinput.insight.controller;
 
 import goorm.reinput.global.auth.PrincipalDetails;
 import goorm.reinput.insight.domain.dto.InsightCreateDto;
+import goorm.reinput.insight.domain.dto.InsightModifyDto;
 import goorm.reinput.insight.domain.dto.InsightResponseDto;
 import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import goorm.reinput.insight.service.InsightService;
@@ -46,7 +47,6 @@ public class InsightController {
         return ResponseEntity.ok().body(insightService.getInsightDetail(principalDetails.getUserId(), insightId));
     }
 
-    // 3. 폴더 내 인사이트 리스트 가져오기
     @Operation(summary = "폴더 내 인사이트 리스트 가져오기", description = "유저가 폴더 클릭 시 폴더 내 인사이트 리스트를 가져옵니다")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/folder/{folderId}")
@@ -56,4 +56,12 @@ public class InsightController {
         return ResponseEntity.ok().body(insightService.getInsightList(userId, folderId));
     }
 
+    @Operation(summary = "인사이트 수정", description = "유저가 인사이트를 수정할 때 사용하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @PutMapping()
+    public void modifyInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightModifyDto insightModifyDto) {
+        Long userId =  principalDetails.getUserId();
+        log.info("[InsightController] modifyInsight {} called", userId);
+        insightService.modifyInsight(userId, insightModifyDto);
+    }
 }
