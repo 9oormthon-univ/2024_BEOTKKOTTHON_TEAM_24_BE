@@ -4,13 +4,11 @@ import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.folder.service.FolderService;
+import goorm.reinput.global.util.AESUtil;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
-import goorm.reinput.insight.domain.dto.InsightCreateDto;
-import goorm.reinput.insight.domain.dto.InsightModifyDto;
-import goorm.reinput.insight.domain.dto.InsightResponseDto;
-import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
+import goorm.reinput.insight.domain.dto.*;
 import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.insight.repository.HashTagRepository;
 import goorm.reinput.insight.repository.InsightImageRepository;
@@ -28,10 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +51,48 @@ public class InsightService {
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
 
+    public List<InsightShareResponseDto> accessSharedFolder(Long userId, String token) {
+        // 토큰 해독
+        String decryptedString = AESUtil.decrypt(token);
+        String[] parts = decryptedString.split("@");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Decrypted data format is incorrect.");
+        }
+
+        Long folderId = Long.parseLong(parts[0]);
+        boolean isCopyable = Boolean.parseBoolean(parts[1]);
+        log.info("toekn = {}, folderId = {}, isCopyable = {}", token, folderId, isCopyable);
+
+        List<Insight> insights = insightRepository.findByFolder_FolderId(folderId);
+
+        List<InsightShareResponseDto> insightShareResponseList = insights.stream().map(insight -> {
+            List<String> hashTags = insight.getHashTagList().stream()
+                    .map(HashTag::getHashTagName)
+                    .collect(Collectors.toList());
+
+            List<String> insightImages = insight.getInsightImageList().stream()
+                    .map(InsightImage::getInsightImageUrl)
+                    .collect(Collectors.toList());
+
+            return InsightShareResponseDto.builder()
+                    .insightId(insight.getInsightId())
+                    .insightTitle(insight.getInsightTitle())
+                    .insightUrl(insight.getInsightUrl())
+                    .insightSummary(insight.getInsightSummary())
+                    .insightMainImage(insight.getInsightMainImage())
+                    .insightMemo(insight.getInsightMemo())
+                    .insightSource(insight.getInsightSource())
+                    .viewCount(insight.getViewCount())
+                    .folderName(insight.getFolder().getFolderName())
+                    .folderId(folderId)
+                    .isCopyable(isCopyable)
+                    .hashTagList(hashTags)
+                    .insightImageList(insightImages)
+                    .build();
+        }).collect(Collectors.toList());
+
+        return insightShareResponseList;
+    }
     @Transactional
     public String getMainImage(Long userId, String url) {
         try {
