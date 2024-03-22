@@ -49,6 +49,15 @@ public class InsightService {
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
 
+    public Boolean deleteInsight(Long insightId){
+
+        Insight insight = insightRepository.findByInsightId(insightId).orElseThrow(() -> new IllegalArgumentException("insight not found"));
+
+        insightRepository.delete(insight);
+
+        return true;
+    }
+
     public void modifyInsight(Long userId, InsightModifyDto dto) {
 
         // 인사이트 내용 업데이트
