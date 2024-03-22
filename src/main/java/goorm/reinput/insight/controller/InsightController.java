@@ -73,4 +73,14 @@ public class InsightController {
         log.info("[InsightController] deleteInsight userId = {}, insightId = {} called", userId, insightId);
         return insightService.deleteInsight(insightId);
     }
+
+    @Operation(summary = "폴더 내 인사이트 태그로 검색하기", description = "폴더 내에서 검색 시 해당 검색어가 포함된 태그를 가진 모든 인사이트를 반환합니다")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @GetMapping("/search/{folderId}/{tag}")
+    public ResponseEntity<List<InsightSimpleResponseDto>> getInsightList(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId, final @PathVariable String tag) {
+        Long userId =  principalDetails.getUserId();
+        log.info("[InsightController] getInsightList userId = {}, folderId = {}, tag = {} called", userId, folderId, tag);
+        return ResponseEntity.ok().body(insightService.getInsightListByFolderAndTag(userId, folderId, tag));
+    }
+
 }
