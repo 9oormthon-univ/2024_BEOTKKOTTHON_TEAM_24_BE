@@ -60,7 +60,7 @@ public class ReminderService {
         ReminderQuestionResponseDto todayClear false
          */
         boolean todayClear = reminderQuestionQueryDtos.stream()
-                .anyMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
+                .allMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
 
         return ReminderQuestionResponseDto.builder()
                 .todayClear(todayClear)
@@ -113,6 +113,7 @@ public class ReminderService {
                         ReminderInsightDto.builder()
                                 .insightId(dto.getInsightId())
                                 .insightTitle(dto.getInsightTitle())
+                                .insightSummary(dto.getInsightSummary())
                                 .insightMainImage(dto.getInsightMainImage())
                                 .insightTagList(dto.getInsightTagList())
                                 .todayRead(dto.isTodayRead())

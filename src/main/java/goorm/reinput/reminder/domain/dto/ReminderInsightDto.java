@@ -12,14 +12,16 @@ import java.util.List;
 public class ReminderInsightDto {
     private Long insightId;
     private String insightTitle;
+    private String insightSummary;
     private String insightMainImage;
     private List<String> insightTagList;
     private boolean todayRead;
 
     @Builder
-    public ReminderInsightDto(Long insightId, String insightTitle, String insightMainImage, List<String> insightTagList, boolean todayRead) {
+    public ReminderInsightDto(Long insightId, String insightTitle, String insightSummary, String insightMainImage, List<String> insightTagList, boolean todayRead) {
         this.insightId = insightId;
         this.insightTitle = insightTitle;
+        this.insightSummary = insightSummary;
         this.insightMainImage = insightMainImage;
         this.insightTagList = insightTagList;
         this.todayRead = todayRead;
