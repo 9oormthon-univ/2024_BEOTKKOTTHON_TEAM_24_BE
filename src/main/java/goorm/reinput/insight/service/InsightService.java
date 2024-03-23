@@ -19,6 +19,7 @@ import goorm.reinput.reminder.domain.ReminderQuestion;
 import goorm.reinput.reminder.repository.ReminderDateRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
+import goorm.reinput.reminder.repository.impl.CustomReminderRepository;
 import goorm.reinput.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class InsightService {
     private final ReminderRepository reminderRepository;
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
+    private final CustomReminderRepository customReminderRepository;
     private final CustomInsightRepository customInsightRepository;
     // S3 클라이언트와 버킷 이름을 주입
     @Autowired
@@ -128,6 +130,7 @@ public class InsightService {
 
         return insightShareResponseList;
     }
+
     @Transactional
     public String getMainImage(Long userId, String url) {
         try {
@@ -161,7 +164,8 @@ public class InsightService {
 
         return filteredInsightList;
     }
-    public Boolean deleteInsight(Long insightId){
+
+    public Boolean deleteInsight(Long insightId) {
 
         Insight insight = insightRepository.findByInsightId(insightId).orElseThrow(() -> new IllegalArgumentException("insight not found"));
 
@@ -236,8 +240,8 @@ public class InsightService {
         List<Long> questionId = dto.getReminderQuestionId();
         List<String> reminderAnswer = dto.getReminderAnswer();
         int idx = 0;
-        for(Long id : questionId){
-            ReminderQuestion reminderQuestion = reminderQuestionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("reminderQuestion not found")    );
+        for (Long id : questionId) {
+            ReminderQuestion reminderQuestion = reminderQuestionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("reminderQuestion not found"));
 
             reminderQuestion.setReminderAnswer(reminderAnswer.get(idx++));
             reminderQuestionRepository.save(reminderQuestion);
@@ -308,6 +312,9 @@ public class InsightService {
         if (reminder.getIsEnable()) {
             ReminderDate reminderDate = reminderDateRepository.findByReminder(reminder).orElseThrow(() -> new IllegalArgumentException("ReminderDate not found"));
             builder.remindType(reminderDate.getRemindType()).remindDays(reminderDate.getRemindDays());
+            if (customReminderRepository.isInsightInRemindersToNotify(userId, insightId)) {
+                customReminderRepository.updateLastView(insightId);
+            }
         }
 
         return builder.build();
