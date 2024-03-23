@@ -20,6 +20,7 @@ import goorm.reinput.reminder.repository.ReminderDateRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
 import goorm.reinput.reminder.repository.impl.CustomReminderRepository;
+import goorm.reinput.user.domain.User;
 import goorm.reinput.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -328,12 +329,14 @@ public class InsightService {
     @Transactional
     public void saveInsight(Long userId, InsightCreateDto dto) {
 
-        Optional<Folder> folderOptional = folderRepository.findByFolderName(dto.getFolderName());
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+
+        Optional<Folder> folderOptional = folderRepository.findByFolderNameAndUser(dto.getFolderName(), user);
         if (!folderOptional.isPresent()) {
             folderService.saveFolder(userId, dto.getFolderName(), FolderColor.BLUE);
         }
 
-        Insight insight = Insight.builder().folder(folderRepository.findByFolderName(dto.getFolderName()).orElseThrow(() -> {
+        Insight insight = Insight.builder().folder(folderRepository.findByFolderNameAndUser(dto.getFolderName(), user).orElseThrow(() -> {
             log.error("[InsightService] folder not found by folderName");
             return new IllegalArgumentException("folder not found");
         })).insightUrl(dto.getInsightUrl()).insightMemo(dto.getInsightMemo()).insightSource(dto.getInsightSource()).insightTitle(dto.getInsightTitle()).insightSummary(dto.getInsightSummary()).insightMainImage(dto.getInsightMainImage()).viewCount(0).build();
