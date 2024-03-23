@@ -100,7 +100,7 @@ public class InsightController {
 
     @Operation(summary = "이미지 업로드하기", description = "유저가 이미지를 업로드 할 때 마다 이 api를 호출하면 됩니다.")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
-    @PostMapping("/image")
+    @PostMapping(value = "/image", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadImage(final @AuthenticationPrincipal PrincipalDetails principalDetails,
                                               @RequestParam("image") MultipartFile image) {
         if (image.isEmpty()) {
