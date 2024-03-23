@@ -54,6 +54,10 @@ dependencies {
     //jsoup
     implementation 'org.jsoup:jsoup:1.15.3'
 
+    // aws s3
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
 }
 
 tasks.named('test') {

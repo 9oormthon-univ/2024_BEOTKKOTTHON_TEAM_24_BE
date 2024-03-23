@@ -26,9 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +58,33 @@ public class InsightService {
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
     private final CustomInsightRepository customInsightRepository;
+    // S3 클라이언트와 버킷 이름을 주입
+    @Autowired
+    private S3Client s3Client;
+
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    public String uploadImage(Long userId, MultipartFile imageFile) {
+        String key = "uploads/" + userId + "/" + imageFile.getOriginalFilename();
+        try {
+            // S3에 파일 업로드
+            PutObjectResponse response = s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .build(),
+                    RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize())
+            );
+
+            // 업로드된 이미지의 URL 반환
+            URL imageUrl = s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(key));
+            return imageUrl.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image to S3", e);
+        }
+    }
+
 
     public List<InsightShareResponseDto> accessSharedFolder(Long userId, String token) {
         // 토큰 해독
@@ -290,7 +325,6 @@ public class InsightService {
         if (!folderOptional.isPresent()) {
             folderService.saveFolder(userId, dto.getFolderName(), FolderColor.BLUE);
         }
-
 
         Insight insight = Insight.builder().folder(folderRepository.findByFolderName(dto.getFolderName()).orElseThrow(() -> {
             log.error("[InsightService] folder not found by folderName");

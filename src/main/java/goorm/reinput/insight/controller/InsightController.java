@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -95,6 +96,19 @@ public class InsightController {
         Long userId = principalDetails.getUserId();
         log.info("[InsightController] accessSharedFolder {} called", userId);
         return ResponseEntity.ok().body(insightService.accessSharedFolder(userId, token));
+    }
+
+    @Operation(summary = "이미지 업로드하기", description = "유저가 이미지를 업로드 할 때 마다 이 api를 호출하면 됩니다.")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @PostMapping("/image")
+    public ResponseEntity<String> uploadImage(final @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                              @RequestParam("image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("No image file provided");
+        }
+        Long userId = principalDetails.getUserId();
+        String imageUrl = insightService.uploadImage(userId, image);
+        return ResponseEntity.ok().body(imageUrl);
     }
 
 }
