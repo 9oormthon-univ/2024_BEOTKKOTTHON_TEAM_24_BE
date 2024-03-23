@@ -106,15 +106,20 @@ public class FolderService {
     }
     // userId 검색후 공유를 원하는 folder를 찾아서 copy
     @Transactional
-    public void copyFolder(Long userId, Long folderId) {
+    public void copyFolder(Long userId, String token) {
+        // 토큰 해독
+        String decryptedString = AESUtil.decrypt(token);
+        String[] parts = decryptedString.split("@");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Decrypted data format is incorrect.");
+        }
+
+        Long folderId = Long.parseLong(parts[0]);
+        boolean isCopyable = Boolean.parseBoolean(parts[1]);
         log.info("[FolderService] copyFolder {} called", userId);
         if (userId == null) {
             log.error("[FolderService] userId is null");
             throw new IllegalArgumentException("userId is null");
-        }
-        if (folderId == null) {
-            log.error("[FolderService] folderId is null");
-            throw new IllegalArgumentException("folderId is null");
         }
 
         Folder folder = folderRepository.findById(folderId)

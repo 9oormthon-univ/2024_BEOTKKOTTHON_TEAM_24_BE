@@ -35,10 +35,10 @@ public class FolderController {
         return ResponseEntity.ok().body(folderService.createShareLink(principalDetails.getUserId(), folderShareDto));
     }
 
-    @GetMapping("/share/copy/{folderId}")
-    public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable Long folderId) {
+    @GetMapping("/share/copy/{token}")
+    public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable String token) {
         log.info("[FolderController] copyFolder {} called", principalDetails.getUserId());
-        folderService.copyFolder(principalDetails.getUserId(), folderId);
+        folderService.copyFolder(principalDetails.getUserId(), token);
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
 
