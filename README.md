@@ -40,7 +40,7 @@
 - **QueryDSL** : QueryDSL을 사용하여 동적 쿼리 작성
 - **Swagger** : Swagger를 사용하여 API 문서화
 - **AWS** : AWS를 사용하여 서버 배포
-- **Docker** : Docker를 사용하여 컨테이너화
+- **Docker** : Docker 및 Docker Compose를 사용하여 컨테이너 관리 및 배포, 이미지 관리
 - **Github Actions** : Github Actions를 사용하여 CI/CD 파이프라인 구축
 - **Nginx** : Nginx를 사용하여 로드 밸런싱 및 리버스 프록시 구축
 - **RDS** : RDS를 사용하여 데이터베이스 구축
@@ -52,6 +52,7 @@
 - **Gradle** : Gradle을 사용하여 빌드 관리
 - **JPA** : JPA를 사용하여 ORM 구현
 - **MySQL** : MySQL을 사용하여 데이터베이스 구축
+- **무중단배포** : Docker, Docker-Compose, Nginx, EC2, Target-groups, Application Load Balancer, AWS Certificate Manager, Route53, Gabia 를 사용한 Blue-Green 저비용 최적화 무중단 배포 서버 파이프라인 구축
 
 ## Reinput Service Architecture
 ![image](https://github.com/goormthon-Univ/2024_BEOTKKOTTHON_TEAM_24_BE/assets/67987132/fbf2dc19-56e0-4583-a6f2-f30870ce5508)
@@ -64,6 +65,7 @@
 ### Git Branch 전략
 - **main** : 배포 가능한 상태만을 관리하는 브랜치
 - **feat** : 새로운 기능 개발 브랜치
+- **fix**: 기능 수정용 브랜치
 - **test** : 테스트 코드 작성 브랜치
 ### Scrum
 - **매일 저녁 10시**에 스크럼 진행
