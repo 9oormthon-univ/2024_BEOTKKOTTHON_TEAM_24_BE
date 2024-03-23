@@ -14,18 +14,24 @@ public class ReminderQuestionQueryDto {
     private LocalDateTime reminderUpdatedAt;
     private Long insightId;
     private Long reminderId;
+    private Long reminderQuestionId;
     private String insightTitle;
     private String insightMainImage;
     private LocalDateTime lastRemindedAt;
+    private LocalDateTime answeredAt;
     private List<String> insightTagList;
 
     @Builder
-    public ReminderQuestionQueryDto(String reminderQuestion, Long insightId, Long reminderId, String insightTitle, String insightMainImage, List<String> insightTagList) {
+    public ReminderQuestionQueryDto(String reminderQuestion, LocalDateTime reminderUpdatedAt, Long insightId, Long reminderId, Long reminderQuestionId, String insightTitle, String insightMainImage, LocalDateTime lastRemindedAt, LocalDateTime answeredAt, List<String> insightTagList) {
         this.reminderQuestion = reminderQuestion;
+        this.reminderUpdatedAt = reminderUpdatedAt;
         this.insightId = insightId;
         this.reminderId = reminderId;
+        this.reminderQuestionId = reminderQuestionId;
         this.insightTitle = insightTitle;
         this.insightMainImage = insightMainImage;
+        this.lastRemindedAt = lastRemindedAt;
+        this.answeredAt = answeredAt;
         this.insightTagList = insightTagList;
     }
 

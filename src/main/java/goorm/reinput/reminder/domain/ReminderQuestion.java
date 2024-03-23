@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -18,14 +21,18 @@ public class ReminderQuestion extends BaseTimeEntity {
 
     private String reminderQuestion;
     private String reminderAnswer;
+    private Long questionId;
+    private LocalDateTime answeredAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Reminder reminder;
 
     @Builder
-    public ReminderQuestion(String reminderQuestion, String reminderAnswer, Reminder reminder) {
+    public ReminderQuestion(String reminderQuestion, String reminderAnswer, Long questionId, LocalDateTime answeredAt, Reminder reminder) {
         this.reminderQuestion = reminderQuestion;
         this.reminderAnswer = reminderAnswer;
+        this.questionId = questionId;
+        this.answeredAt = answeredAt;
         this.reminder = reminder;
     }
 }

@@ -23,6 +23,7 @@ import static goorm.reinput.insight.domain.QInsight.insight;
 import static goorm.reinput.reminder.domain.QReminder.reminder;
 import static goorm.reinput.reminder.domain.QReminderDate.reminderDate;
 import static goorm.reinput.user.domain.QUser.user;
+import static goorm.reinput.reminder.domain.QReminderQuestion.reminderQuestion1;
 
 
 @Repository
@@ -36,25 +37,30 @@ public class CustomReminderRepository {
         this.queryFactory = new JPAQueryFactory(this.em);
     }
     //가장 읽은 오래된 리마인더 5개만 조회, insight와 reminder question join
-    public List<ReminderQuestionQueryDto> findOldestReminderDto(List<Long> reminderIds){
-        if(reminderIds.isEmpty()){
+    public List<ReminderQuestionQueryDto> findOldestReminderDto(List<Long> reminderQuestionIds){
+        if(reminderQuestionIds.isEmpty()){
             return Collections.emptyList();
         }
+
         List<ReminderQuestionQueryDto> results = queryFactory
                 .select(Projections.fields(ReminderQuestionQueryDto.class,
-                        reminder.reminderQuestion.reminderQuestion.as("reminderQuestion"),
-                        reminder.reminderQuestion.updatedAt.as("reminderUpdatedAt"),
+                        reminderQuestion1.reminderQuestion.as("reminderQuestion"),
+                        reminderQuestion1.updatedAt.as("reminderUpdatedAt"),
                         insight.insightId.as("insightId"),
                         reminder.reminderId.as("reminderId"),
+                        reminderQuestion1.reminderQuestionId.as("reminderQuestionId"),
                         insight.insightTitle.as("insightTitle"),
                         insight.insightMainImage.as("insightMainImage"),
-                        reminder.lastRemindedAt.as("lastRemindedAt")
+                        reminder.lastRemindedAt.as("lastRemindedAt"),
+                        reminderQuestion1.answeredAt.as("answeredAt")
                 ))
-                .from(reminder)
+                .from(reminderQuestion1)
+                .join(reminderQuestion1.reminder, reminder)
                 .join(reminder.insight, insight)
-                .where(reminder.reminderId.in(reminderIds))
+                .where(reminderQuestion1.reminderQuestionId.in(reminderQuestionIds))
                 .orderBy(reminder.lastRemindedAt.asc())
                 .fetch();
+
         results.forEach(dto -> {
             List<String> tags = queryFactory
                     .select(hashTag.hashTagName)
@@ -65,7 +71,6 @@ public class CustomReminderRepository {
         });
 
         return results;
-
     }
 
     public List<Reminder> findOldestReminders(Long userId) {

@@ -1,5 +1,6 @@
 package goorm.reinput.reminder.service;
 
+import goorm.reinput.reminder.domain.Question;
 import goorm.reinput.reminder.domain.Reminder;
 import goorm.reinput.reminder.domain.ReminderQuestion;
 import goorm.reinput.reminder.domain.dto.ReminderInsightDto;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,34 +36,34 @@ public class ReminderService {
     private final QuestionRepository questionRepository;
     private final ReminderQuestionRepository reminderQuestionRepository;
 
-    @Transactional
+
     public List<Long> makeReminderQuestionList(Long userId) {
         log.info("makeReminderQuestionList start");
         List<Reminder> reminders = customReminderRepository.findOldestReminders(userId);
+        List<ReminderQuestion> reminderQuestions = new ArrayList<>();
 
-        //오래된 리마인더중 reminderQuestion이 없는 경우 질문을 생성하고 있으면 그대로 가져온다.
         for (Reminder reminder : reminders) {
-            if (reminder.getReminderQuestion() == null) {
-                ReminderQuestion question = ReminderQuestion.builder()
-                        .reminder(reminder)
-                        .reminderQuestion(questionRepository.findRandomQuestion().getQuestion())
-                        .build();
-                reminderQuestionRepository.save(question);
-            }
+            Question question = questionRepository.findRandomQuestion();
+            ReminderQuestion reminderQuestion = ReminderQuestion.builder()
+                    .reminder(reminder)
+                    .reminderQuestion(question.getQuestion())
+                    .questionId(question.getId())
+                    .build();
+            reminderQuestions.add(reminderQuestionRepository.save(reminderQuestion));
         }
 
-        return reminders.stream().map(Reminder::getReminderId).toList();
+        return reminderQuestions.stream().map(ReminderQuestion::getReminderQuestionId).collect(Collectors.toList());
     }
+    @Transactional
     public ReminderQuestionResponseDto getOlderReminder(Long userId){
         log.info("[ReminderService] getOlderReminder {}", userId);
 
         List<ReminderQuestionQueryDto> reminderQuestionQueryDtos = customReminderRepository.findOldestReminderDto(makeReminderQuestionList(userId));
 
-        /*reminder reminderQuestion 의 update 시간이 하나라도 오늘이 아니면
-        ReminderQuestionResponseDto todayClear false
+        /*reminder
+        * 오늘 날짜에 모두 응답했는지 확인
          */
-        boolean todayClear = reminderQuestionQueryDtos.stream()
-                .allMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
+        boolean todayClear = reminderQuestionQueryDtos.stream().allMatch(ReminderQuestionQueryDto -> ReminderQuestionQueryDto.getAnsweredAt() != null);
 
         return ReminderQuestionResponseDto.builder()
                 .todayClear(todayClear)
@@ -69,6 +72,7 @@ public class ReminderService {
                                         .reminderQuestion(dto.getReminderQuestion())
                                         .insightId(dto.getInsightId())
                                         .reminderId(dto.getReminderId())
+                                        .reminderQuestionId(dto.getReminderQuestionId())
                                         .insightTitle(dto.getInsightTitle())
                                         .insightMainImage(dto.getInsightMainImage())
                                         .insightTagList(dto.getInsightTagList())
@@ -77,24 +81,19 @@ public class ReminderService {
                 .build();
 
     }
+
     @Transactional
     public ReminderAnswerResDto answerReminderQuestion(Long userId, ReminderAnswerReqDto reminderAnswer){
-        log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderId());
-
-        Reminder reminder = reminderRepository.findById(reminderAnswer.getReminderId()).orElseThrow(() -> new IllegalArgumentException("reminder not found"));
-        ReminderQuestion reminderQuestion = reminder.getReminderQuestion();
-        ReminderQuestion newQuestion = ReminderQuestion.builder()
-                .reminder(reminder)
-                .reminderQuestion(reminderQuestion.getReminderQuestion())
-                .reminderAnswer(reminderAnswer.getReminderAnswer())
-                .build();
-
-        ReminderQuestion reminderQuestion1 = reminderQuestionRepository.save(newQuestion);
-
+        log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderQuestionId());
+        //reminderQuestionId로 reminderQuestion 조회
+        ReminderQuestion reminderQuestion = reminderQuestionRepository.findById(reminderAnswer.getReminderQuestionId()).orElseThrow(() -> new IllegalArgumentException("해당 리마인더 질문이 존재하지 않습니다."));
+        //reminderQuestion에 답변 저장
+        reminderQuestion.setReminderAnswer(reminderAnswer.getReminderAnswer());
+        reminderQuestion.setAnsweredAt(LocalDateTime.now());
+        reminderQuestionRepository.save(reminderQuestion);
         return ReminderAnswerResDto.builder()
-                .insightId(reminderQuestion1.getReminder().getInsight().getInsightId())
+                .insightId(reminderQuestion.getReminder().getInsight().getInsightId())
                 .build();
-
     }
 
     public ReminderCalenderResDto getReminderCalender(Long userId, ReminderCalenderReqDto reminderCalenderReqDto){

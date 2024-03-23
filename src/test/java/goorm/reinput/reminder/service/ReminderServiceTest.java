@@ -73,7 +73,7 @@ public class ReminderServiceTest {
         Reminder reminder = Reminder.builder()
                 .insight(insight)
                 .isEnable(true)
-                .lastRemindedAt(null)
+                .lastRemindedAt(LocalDateTime.now())
                 .build();
 
         List<Integer> days = List.of(1, 2, 3, 4, 5, 6, 7);
@@ -119,7 +119,7 @@ public class ReminderServiceTest {
         Reminder reminderMonthly = Reminder.builder()
                 .insight(insight1)
                 .isEnable(true)
-                .lastRemindedAt(null)
+                .lastRemindedAt(LocalDateTime.now())
                 .build();
         ReminderDate reminderDateMonthly = ReminderDate.builder()
                 .reminder(reminderMonthly)
@@ -217,7 +217,25 @@ public class ReminderServiceTest {
         ReminderQuestionResponseDto olderReminder = reminderService.getOlderReminder(userId);
         // then
         assertThat(olderReminder.getReminderQuestionList().size()).isEqualTo(3);
-        // olderReminder 1번째는 reminder2에 해당하는 insight가 나와야함
+        // olderReminder 1번째는 reminder2에 해당하는 insight 가 나와야함
         assertThat(olderReminder.getReminderQuestionList().get(0).getInsightTitle()).isEqualTo("insightTitledefault");
+    }
+
+    //오늘의 질문 답변 테스트
+    @Test
+    void answerReminderQuestion() {
+        // given
+        ReminderQuestionResponseDto olderReminder = reminderService.getOlderReminder(userId);
+        ReminderAnswerReqDto reqDto = ReminderAnswerReqDto.builder()
+                .reminderQuestionId(olderReminder.getReminderQuestionList().get(0).getReminderQuestionId())
+                .reminderAnswer("reminderAnswer")
+                .build();
+        // when
+        ReminderAnswerResDto resDto = reminderService.answerReminderQuestion(userId, reqDto);
+        //insightTitledefault의 reminder에 대한 답변이므로 insightId가 나와야함
+        assertThat(resDto.getInsightId()).isEqualTo(3L);
+        // then
+        System.out.println("resDto = " + resDto);
+        System.out.println("resDto.getInsightId() = " + resDto.getInsightId());
     }
 }
