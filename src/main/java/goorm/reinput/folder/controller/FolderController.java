@@ -41,6 +41,7 @@ public class FolderController {
     public ResponseEntity<String> copyFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @PathVariable String token) {
         log.info("[FolderController] copyFolder {} called", principalDetails.getUserId());
         folderService.copyFolder(principalDetails.getUserId(), token);
+
         return new ResponseEntity<>("success", HttpStatus.CREATED);
     }
 
