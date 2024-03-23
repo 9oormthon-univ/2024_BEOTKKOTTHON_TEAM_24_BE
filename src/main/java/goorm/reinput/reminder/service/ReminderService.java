@@ -60,7 +60,7 @@ public class ReminderService {
         ReminderQuestionResponseDto todayClear false
          */
         boolean todayClear = reminderQuestionQueryDtos.stream()
-                .anyMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
+                .allMatch(dto -> dto.getReminderUpdatedAt().toLocalDate().isEqual(java.time.LocalDate.now()));
 
         return ReminderQuestionResponseDto.builder()
                 .todayClear(todayClear)

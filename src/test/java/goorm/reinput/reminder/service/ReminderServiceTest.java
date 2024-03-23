@@ -208,4 +208,13 @@ public class ReminderServiceTest {
         assertThat(resDto.getRemindInsightList().get(0).getInsightTitle()).isNotEqualTo("insightTitleDefault");
 
     }
+    //오늘의 질문 테스트
+    @Test
+    void getOlderReminder() {
+        // given
+        // when
+        ReminderQuestionResponseDto olderReminder = reminderService.getOlderReminder(userId);
+        // then
+        assertThat(olderReminder.isTodayClear()).isTrue();
+    }
 }
