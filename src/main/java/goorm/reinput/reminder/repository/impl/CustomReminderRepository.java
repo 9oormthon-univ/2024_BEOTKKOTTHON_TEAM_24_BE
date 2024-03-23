@@ -120,6 +120,7 @@ public class CustomReminderRepository {
                         insight.insightId.as("insightId"),
                         insight.insightTitle.as("insightTitle"),
                         insight.insightMainImage.as("insightMainImage"),
+                        insight.insightSummary.as("insightSummary"),
                         reminder.lastRemindedAt.as("lastRemindedAt")
                 ))
                 .from(reminder)

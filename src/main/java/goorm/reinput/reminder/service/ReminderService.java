@@ -113,6 +113,7 @@ public class ReminderService {
                         ReminderInsightDto.builder()
                                 .insightId(dto.getInsightId())
                                 .insightTitle(dto.getInsightTitle())
+                                .insightSummary(dto.getInsightSummary())
                                 .insightMainImage(dto.getInsightMainImage())
                                 .insightTagList(dto.getInsightTagList())
                                 .todayRead(dto.isTodayRead())
