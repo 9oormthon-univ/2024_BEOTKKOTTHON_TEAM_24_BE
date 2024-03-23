@@ -28,9 +28,9 @@ public class InsightController {
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PostMapping()
-    public void saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
+    public ResponseEntity<Long> saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
         log.info("[InsightController] saveInsight {} called", principalDetails.getUserId());
-        insightService.saveInsight(principalDetails.getUserId(), insightCreateDto);
+        return ResponseEntity.ok().body(insightService.saveInsight(principalDetails.getUserId(), insightCreateDto));
     }
 
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")

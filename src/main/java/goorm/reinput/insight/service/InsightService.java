@@ -327,7 +327,7 @@ public class InsightService {
     }
 
     @Transactional
-    public void saveInsight(Long userId, InsightCreateDto dto) {
+    public Long saveInsight(Long userId, InsightCreateDto dto) {
 
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
 
@@ -374,6 +374,8 @@ public class InsightService {
                 build();
 
         reminderDateRepository.save(reminderDate);
+
+        return insight.getInsightId();
     }
 
 }
