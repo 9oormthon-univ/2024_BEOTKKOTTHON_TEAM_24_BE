@@ -227,14 +227,14 @@ public class ReminderServiceTest {
         // given
         ReminderQuestionResponseDto olderReminder = reminderService.getOlderReminder(userId);
         ReminderAnswerReqDto reqDto = ReminderAnswerReqDto.builder()
-                .reminderId(olderReminder.getReminderQuestionList().get(0).getReminderId())
-                .reminderQuestion("reminderQuestion")
+                .reminderQuestionId(olderReminder.getReminderQuestionList().get(0).getReminderQuestionId())
                 .reminderAnswer("reminderAnswer")
                 .build();
         // when
         ReminderAnswerResDto resDto = reminderService.answerReminderQuestion(userId, reqDto);
+        //insightTitledefault의 reminder에 대한 답변이므로 insightId가 나와야함
+        assertThat(resDto.getInsightId()).isEqualTo(3L);
         // then
-        assertThat(resDto.getInsightId()).isEqualTo(1L);
         System.out.println("resDto = " + resDto);
         System.out.println("resDto.getInsightId() = " + resDto.getInsightId());
     }

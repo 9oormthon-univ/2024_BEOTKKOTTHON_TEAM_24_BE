@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ReminderAnswerReqDto {
-    private Long reminderId;
+    private Long reminderQuestionId;
     private String reminderQuestion;
     private String reminderAnswer;
 
     @Builder
-    public ReminderAnswerReqDto(Long reminderId, String reminderQuestion, String reminderAnswer) {
-        this.reminderId = reminderId;
+    public ReminderAnswerReqDto(Long reminderQuestionId, String reminderQuestion, String reminderAnswer) {
+        this.reminderQuestionId = reminderQuestionId;
         this.reminderQuestion = reminderQuestion;
         this.reminderAnswer = reminderAnswer;
     }
