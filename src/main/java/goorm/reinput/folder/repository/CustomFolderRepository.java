@@ -39,7 +39,7 @@ public class CustomFolderRepository {
     public Optional<List<FolderResponseDto>> getFolderList(Long userId) {
         //insight count는 folder 테이블에 없는 컬럼이므로, folderId를 이용하여 insight 테이블에서 count를 가져와야 한다.
         List<FolderResponseDto> results = queryFactory
-                .select(folder.folderId, folder.folderName, insight.count())
+                .select(folder.folderId, folder.folderName, folder.folderColor, insight.count())
                 .from(folder)
                 .leftJoin(folder.insightList, insight)
                 .groupBy(folder.folderId)
