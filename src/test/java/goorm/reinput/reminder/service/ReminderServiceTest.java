@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static goorm.reinput.reminder.domain.QReminder.reminder;
@@ -104,11 +105,11 @@ public class ReminderServiceTest {
                 .viewCount(0)
                 .insightMainImage("insightMainImage")
                 .build();
-
+        //reminder2는 last reminder를 하루전으로 설정
         Reminder reminder2 = Reminder.builder()
                 .insight(insight2)
                 .isEnable(true)
-                .lastRemindedAt(null)
+                .lastRemindedAt(LocalDateTime.now().minusDays(1))
                 .build();
         ReminderDate reminderDate2 = ReminderDate.builder()
                 .reminder(reminder2)
@@ -215,6 +216,8 @@ public class ReminderServiceTest {
         // when
         ReminderQuestionResponseDto olderReminder = reminderService.getOlderReminder(userId);
         // then
-        assertThat(olderReminder.isTodayClear()).isTrue();
+        assertThat(olderReminder.getReminderQuestionList().size()).isEqualTo(3);
+        // olderReminder 1번째는 reminder2에 해당하는 insight가 나와야함
+        assertThat(olderReminder.getReminderQuestionList().get(0).getInsightTitle()).isEqualTo("insightTitledefault");
     }
 }

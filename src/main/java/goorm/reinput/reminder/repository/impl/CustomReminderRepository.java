@@ -17,10 +17,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static goorm.reinput.folder.domain.QFolder.folder;
 import static goorm.reinput.insight.domain.QHashTag.hashTag;
 import static goorm.reinput.insight.domain.QInsight.insight;
 import static goorm.reinput.reminder.domain.QReminder.reminder;
 import static goorm.reinput.reminder.domain.QReminderDate.reminderDate;
+import static goorm.reinput.user.domain.QUser.user;
 
 
 @Repository
@@ -69,8 +71,12 @@ public class CustomReminderRepository {
     public List<Reminder> findOldestReminders(Long userId) {
         return queryFactory
                 .selectFrom(reminder)
+                .join(reminder.insight, insight)
+                .join(insight.folder, folder)
+                .join(folder.user, user)
+                .where(user.userId.eq(userId)
+                        .and(reminder.isEnable.isTrue()))
                 .orderBy(reminder.lastRemindedAt.asc())
-                .where(reminder.isEnable.isTrue().and(reminder.insight.folder.user.userId.eq(userId)))
                 .limit(5)
                 .fetch();
     }
