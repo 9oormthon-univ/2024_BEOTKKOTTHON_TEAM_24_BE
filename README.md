@@ -52,7 +52,7 @@
 - **Gradle** : Gradle을 사용하여 빌드 관리
 - **JPA** : JPA를 사용하여 ORM 구현
 - **MySQL** : MySQL을 사용하여 데이터베이스 구축
-- **무중단배포** : Docker, Docker-Compose, Nginx, EC2, Target-groups, Application Load Balancer, AWS Certificate Manager, Route53, Gabia 를 사용한 Blue-Green 저비용 최적화 무중단 배포 서버 파이프라인 구축
+- **무중단배포** : Docker, Docker-Compose, Nginx, EC2, Target-groups, Application Load Balancer, AWS Certificate Manager, Route53, Github Action, Github Action Self-Hosted Runner, Gabia 를 사용한 Blue-Green 저비용 최적화 무중단 배포 서버 파이프라인 구축 및 서비스 https 서비스 배포
 
 ## Reinput Service Architecture
 ![image](https://github.com/goormthon-Univ/2024_BEOTKKOTTHON_TEAM_24_BE/assets/67987132/fbf2dc19-56e0-4583-a6f2-f30870ce5508)
