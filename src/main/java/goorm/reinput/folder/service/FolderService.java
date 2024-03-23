@@ -60,7 +60,8 @@ public class FolderService {
         }
         if(folderName == null) {
             log.error("[FolderService] folderName is null");
-            throw new IllegalArgumentException("folderName is null");
+            folderName = "null folder";
+           // throw new IllegalArgumentException("folderName is null");
         }
         if(folderColor == null) {
             log.error("[FolderService] folderColor is null");
