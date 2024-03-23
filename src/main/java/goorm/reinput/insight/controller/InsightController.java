@@ -92,10 +92,10 @@ public class InsightController {
     @Operation(summary = "공유된 폴더 url 접속하기", description = "유저의 폴더 내 인사이트 리스트를 볼 수 있는 url에 접속합니다.")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/share")
-    public ResponseEntity<List<InsightShareResponseDto>> accessSharedFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam("token") String token) {
-        Long userId = principalDetails.getUserId();
-        log.info("[InsightController] accessSharedFolder {} called", userId);
-        return ResponseEntity.ok().body(insightService.accessSharedFolder(userId, token));
+    public ResponseEntity<List<InsightShareResponseDto>> accessSharedFolder(@RequestParam("token") String token) {
+
+        log.info("[InsightController] accessSharedFolder called");
+        return ResponseEntity.ok().body(insightService.accessSharedFolder(token));
     }
 
     @Operation(summary = "이미지 업로드하기", description = "유저가 이미지를 업로드 할 때 마다 이 api를 호출하면 됩니다.")

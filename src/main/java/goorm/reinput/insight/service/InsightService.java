@@ -89,7 +89,7 @@ public class InsightService {
     }
 
 
-    public List<InsightShareResponseDto> accessSharedFolder(Long userId, String token) {
+    public List<InsightShareResponseDto> accessSharedFolder( String token) {
         // 토큰 해독
         String decryptedString = AESUtil.decrypt(token);
         String[] parts = decryptedString.split("@");
