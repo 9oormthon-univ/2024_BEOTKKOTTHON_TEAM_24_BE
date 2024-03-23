@@ -47,7 +47,7 @@ public class FolderController {
 
 
     @Operation(summary = "인사이트 검색", description = "유저가 전체 인사이트를 검색할 때 사용하는 API")
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody SearchReqDto searchReqDto) {
         log.info("[FolderController] searchInsight {} called", principalDetails.getUserId());
         return ResponseEntity.ok().body(folderService.findAllInsights(principalDetails.getUserId(), searchReqDto.getSearch()));
