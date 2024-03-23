@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests->
                         requests
-                                .requestMatchers("/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs", "/api-docs/**", "/v3/api-docs/**", "/user/login", "/user/signup", "/user/healthcheck", "/insight/share/**").permitAll()
+                                .requestMatchers("/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs", "/api-docs/**", "/v3/api-docs/**", "/user/login", "/user/signup", "/user/healthcheck", "/insight/share/**", "/actuator", "/actuator/prometheus").permitAll()
                                 // 로그인 및 회원가입 혹은 공개 API에 대한 접근 허용
                                 .anyRequest().authenticated()
                 )
