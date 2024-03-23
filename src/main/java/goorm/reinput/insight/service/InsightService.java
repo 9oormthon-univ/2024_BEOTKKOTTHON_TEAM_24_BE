@@ -8,6 +8,7 @@ import goorm.reinput.global.util.AESUtil;
 import goorm.reinput.insight.domain.HashTag;
 import goorm.reinput.insight.domain.Insight;
 import goorm.reinput.insight.domain.InsightImage;
+import goorm.reinput.insight.domain.InsightRecommend;
 import goorm.reinput.insight.domain.dto.*;
 import goorm.reinput.insight.repository.CustomInsightRepository;
 import goorm.reinput.insight.repository.HashTagRepository;
@@ -20,6 +21,7 @@ import goorm.reinput.reminder.repository.ReminderDateRepository;
 import goorm.reinput.reminder.repository.ReminderQuestionRepository;
 import goorm.reinput.reminder.repository.ReminderRepository;
 import goorm.reinput.reminder.repository.impl.CustomReminderRepository;
+import goorm.reinput.user.domain.Job;
 import goorm.reinput.user.domain.User;
 import goorm.reinput.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -376,4 +378,11 @@ public class InsightService {
         reminderDateRepository.save(reminderDate);
     }
 
+    public List<InsightRecommend> getRecommendInsight(Long userId) {
+
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("user not found")    );
+        Job job = user.getJob();
+
+        return InsightRecommend.getRecommendInsight(job);
+    }
 }

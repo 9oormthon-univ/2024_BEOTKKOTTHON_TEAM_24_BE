@@ -1,6 +1,7 @@
 package goorm.reinput.insight.controller;
 
 import goorm.reinput.global.auth.PrincipalDetails;
+import goorm.reinput.insight.domain.InsightRecommend;
 import goorm.reinput.insight.domain.dto.*;
 import goorm.reinput.insight.service.InsightService;
 import goorm.reinput.user.service.UserService;
@@ -24,6 +25,15 @@ import java.util.List;
 public class InsightController {
 
     private final InsightService insightService;
+
+    @Operation(summary = "인사이트 추천 데이터 반환", description = "유저의 직무에 따라 추천 인사이트를 반환하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @GetMapping("/recommend")
+    public ResponseEntity<List<InsightRecommend>> getRecommendInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        log.info("[InsightController] getRecommendInsight {} called", principalDetails.getUserId());
+        // 인사이트 리스트 반환
+        return ResponseEntity.ok().body(insightService.getRecommendInsight(principalDetails.getUserId()));
+    }
 
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
