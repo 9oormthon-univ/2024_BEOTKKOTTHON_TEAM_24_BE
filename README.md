@@ -43,16 +43,16 @@
 - **Docker** : Docker 및 Docker Compose를 사용하여 컨테이너 관리 및 배포, 이미지 관리
 - **Github Actions** : Github Actions를 사용하여 CI/CD 파이프라인 구축
 - **Nginx** : Nginx를 사용하여 로드 밸런싱 및 리버스 프록시 구축
-- **RDS** : RDS를 사용하여 데이터베이스 구축
+- **RDS** : RDS를 사용하여 MySQL 데이터베이스 구축
 - **S3** : S3를 사용하여 정적 파일 관리
 - **Route53** : Route53을 사용하여 도메인 관리
-- **IAM** : IAM을 사용하여 AWS 리소스 접근 제어
+- **IAM** : IAM을 사용하여 AWS 리소스 접근 제어 및 보안 관리
 - **EC2** : EC2를 사용하여 서버 인스턴스 생성
-- **ALB** : ALB를 사용하여 로드 밸런싱
+- **ALB** : ALB를 사용하여 로드 밸런싱 및 http 프로토콜 https 리다이렉트 구현
 - **Gradle** : Gradle을 사용하여 빌드 관리
 - **JPA** : JPA를 사용하여 ORM 구현
-- **MySQL** : MySQL을 사용하여 데이터베이스 구축
-- **무중단배포** : Docker, Docker-Compose, Nginx, EC2, Target-groups, Application Load Balancer, AWS Certificate Manager, Route53, Github Action, Github Action Self-Hosted Runner, Gabia 를 사용한 Blue-Green 저비용 최적화 무중단 배포 서버 파이프라인 구축 및 서비스 https 서비스 배포
+- **MySQL** : 읽기 작업이 빈번하다는 점을 고려해 선택한 MySQL을 사용한 데이터베이스 구축
+- **무중단배포** : Docker, Docker-Compose, Nginx, EC2, Target-groups, Application Load Balancer, AWS Certificate Manager, Route53, Github Action, Github Action Self-Hosted Runner, Gabia 를 사용한 Blue-Green 프리티어 무중단 배포 서버 파이프라인 구축 및 https 서비스 배포
 
 ## Reinput Service Architecture
 ![image](https://github.com/goormthon-Univ/2024_BEOTKKOTTHON_TEAM_24_BE/assets/67987132/fbf2dc19-56e0-4583-a6f2-f30870ce5508)
@@ -65,7 +65,7 @@
 ### Git Branch 전략
 - **main** : 배포 가능한 상태만을 관리하는 브랜치
 - **feat** : 새로운 기능 개발 브랜치
-- **fix**: 기능 수정용 브랜치
+- **fix**: 기능 수정 및 업데이트 브랜치
 - **test** : 테스트 코드 작성 브랜치
 ### Scrum
 - **매일 저녁 10시**에 스크럼 진행
