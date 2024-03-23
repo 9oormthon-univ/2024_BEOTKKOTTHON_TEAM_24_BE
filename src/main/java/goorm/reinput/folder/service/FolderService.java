@@ -178,8 +178,7 @@ public class FolderService {
         String toEncrypt = folderShareDto.getFolderId() + "@" + folderShareDto.isCopyable();
         String encryptedString = AESUtil.encrypt(toEncrypt);
 
-        //TODO 도메인으로 변경요망
-        String baseURL = "http://localhost:8080";
+        String baseURL = "https://reinput.info";
 
         return FolderShareResponseDto.builder()
                 .url(String.format("%s/insight/share?token=%s", baseURL, encryptedString))
