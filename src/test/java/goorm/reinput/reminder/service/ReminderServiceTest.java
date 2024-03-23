@@ -94,6 +94,27 @@ public class ReminderServiceTest {
                 .viewCount(0)
                 .insightMainImage("insightMainImage")
                 .build();
+
+        Insight insight2 = Insight.builder()
+                .folder(folder)
+                .insightTitle("insightTitledefault")
+                .insightUrl("insightUrl")
+                .insightMemo("insightMemo")
+                .insightSummary("insightSummary")
+                .viewCount(0)
+                .insightMainImage("insightMainImage")
+                .build();
+
+        Reminder reminder2 = Reminder.builder()
+                .insight(insight2)
+                .isEnable(true)
+                .lastRemindedAt(null)
+                .build();
+        ReminderDate reminderDate2 = ReminderDate.builder()
+                .reminder(reminder2)
+                .remindType(RemindType.DEFAULT)
+                .build();
+
         Reminder reminderMonthly = Reminder.builder()
                 .insight(insight1)
                 .isEnable(true)
@@ -115,6 +136,9 @@ public class ReminderServiceTest {
         em.persist(insight1);
         em.persist(reminderMonthly);
         em.persist(reminderDateMonthly);
+        em.persist(insight2);
+        em.persist(reminder2);
+        em.persist(reminderDate2);
         em.flush();
         em.clear();
     }
@@ -132,10 +156,9 @@ public class ReminderServiceTest {
         assertThat(resDto.getRemindInsightList().get(0).getInsightTitle()).isEqualTo("insightTitle");
     }
     @Test
-    void remindTypeMonthOnSpecificDay() {
+    void remindTypeWeekOnSpecificDay() {
         // given
         LocalDate today = LocalDate.now();
-
         // 월별 리마인드 타입 및 현재 날짜에 맞춰 새 리마인더 추가
 
 
@@ -145,7 +168,44 @@ public class ReminderServiceTest {
                 .build());
 
         // then
+        //weekly reminder
         assertThat(resDto.getRemindTotal()).isGreaterThanOrEqualTo(1);
         assertThat(resDto.getRemindInsightList().get(0).getInsightTitle()).isEqualTo("insightTitle");
+        //default reminder 오늘로부터 1일후 7일후 30일후 리마인드
+    }
+
+    @Test
+    void reminderTypeDefault(){
+        //given
+        LocalDate today = LocalDate.now();
+
+        //when
+        //다음날 쿼리
+        ReminderCalenderResDto resDto = reminderService.getReminderCalender(userId, ReminderCalenderReqDto.builder()
+                .requestDate(today.plusDays(1))
+                .build());
+
+        //7일후
+        ReminderCalenderResDto resDto2 = reminderService.getReminderCalender(userId, ReminderCalenderReqDto.builder()
+                .requestDate(today.plusDays(7))
+                .build());
+
+        //30일후
+        ReminderCalenderResDto resDto3 = reminderService.getReminderCalender(userId, ReminderCalenderReqDto.builder()
+                .requestDate(today.plusDays(30))
+                .build());
+
+        //2일후
+        ReminderCalenderResDto resDto4 = reminderService.getReminderCalender(userId, ReminderCalenderReqDto.builder()
+                .requestDate(today.plusDays(2))
+                .build());
+
+        //then
+        assertThat(resDto.getRemindTotal()).isGreaterThanOrEqualTo(1);
+        assertThat(resDto2.getRemindTotal()).isGreaterThanOrEqualTo(1);
+        assertThat(resDto3.getRemindTotal()).isGreaterThanOrEqualTo(1);
+        //DEfault type인 reminder는 없어야함 다른 리마인드는 있을 수 있음 "insightTitleDefault"가 없어야함
+        assertThat(resDto.getRemindInsightList().get(0).getInsightTitle()).isNotEqualTo("insightTitleDefault");
+
     }
 }
