@@ -1,8 +1,5 @@
 package goorm.reinput.insight.domain.dto;
 
-import goorm.reinput.folder.domain.Folder;
-import goorm.reinput.insight.domain.HashTag;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
