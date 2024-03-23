@@ -82,14 +82,12 @@ public class ReminderService {
         log.info("[ReminderService] getReminderAnswer userId: {}, reminderId: {}", userId, reminderAnswer.getReminderId());
 
         Reminder reminder = reminderRepository.findById(reminderAnswer.getReminderId()).orElseThrow(() -> new IllegalArgumentException("reminder not found"));
-        ReminderQuestion reminderQuestion = reminder.getReminderQuestion();
-        ReminderQuestion newQuestion = ReminderQuestion.builder()
-                .reminder(reminder)
-                .reminderQuestion(reminderQuestion.getReminderQuestion())
-                .reminderAnswer(reminderAnswer.getReminderAnswer())
-                .build();
+        ReminderQuestion reminderQuestion = reminderQuestionRepository.findByReminder(reminder).orElseThrow(() -> new IllegalArgumentException("reminderQuestion not found"));
 
-        ReminderQuestion reminderQuestion1 = reminderQuestionRepository.save(newQuestion);
+        reminderQuestion.setReminderAnswer(reminderAnswer.getReminderAnswer());
+        reminderQuestion.setReminderQuestion(reminderAnswer.getReminderQuestion());
+
+        ReminderQuestion reminderQuestion1 = reminderQuestionRepository.save(reminderQuestion);
 
         return ReminderAnswerResDto.builder()
                 .insightId(reminderQuestion1.getReminder().getInsight().getInsightId())

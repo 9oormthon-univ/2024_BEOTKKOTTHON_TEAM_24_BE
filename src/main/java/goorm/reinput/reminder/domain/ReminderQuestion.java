@@ -18,8 +18,9 @@ public class ReminderQuestion extends BaseTimeEntity {
 
     private String reminderQuestion;
     private String reminderAnswer;
+    private Long questionId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Reminder reminder;
 
     @Builder

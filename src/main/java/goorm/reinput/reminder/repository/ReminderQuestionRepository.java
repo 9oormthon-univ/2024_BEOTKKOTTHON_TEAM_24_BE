@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReminderQuestionRepository extends JpaRepository<ReminderQuestion, Long> {
-    Optional<List<ReminderQuestion>> findByReminder(Reminder reminder);
+    Optional<ReminderQuestion> findByReminder(Reminder reminder);
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,8 +29,8 @@ public class Reminder extends BaseTimeEntity {
     @OneToOne(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
     private ReminderDate reminderDate;
 
-    @OneToOne(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ReminderQuestion reminderQuestion;
+    @OneToMany(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReminderQuestion> reminderQuestion;
 
     @Builder
     public Reminder(Boolean isEnable, LocalDateTime lastRemindedAt, Insight insight) {
