@@ -1,10 +1,13 @@
 package goorm.reinput.user.domain;
 
+import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
@@ -29,6 +32,8 @@ public class User extends BaseTimeEntity {
 
     private boolean isEnable;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Folder> folders;
     /*
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Motivation motivation;

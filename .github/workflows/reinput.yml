@@ -1,7 +1,7 @@
 name: ✨ REINPUT backend DEV CD ✨
 
 env:
-  PROFILE: dev
+  PROFILE: prod
   DOCKER_HUB_REPOSITORY: ahchjang/reinput # docker 설정할 것
 
 on:
@@ -64,6 +64,8 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: ${{ env.DOCKER_HUB_REPOSITORY }}:latest
+          build-args: |
+            SPRING_PROFILES_ACTIVE=${{ env.PROFILE }}
 
   backend-docker-pull-and-run:
     runs-on: [ self-hosted, dev ]
