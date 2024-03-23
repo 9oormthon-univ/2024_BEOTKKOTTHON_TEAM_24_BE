@@ -110,3 +110,11 @@
 ## 3. 추가 사항
 ```
 
+## 🌸 기타 사항
+### Swagger API 문서
+- **URL** : [Swagger API 문서](https://reinput.info/swagger-ui/index.html)
+### ERD
+<img width="1600" alt="스크린샷 2024-03-24 오전 5 03 30" src="https://github.com/goormthon-Univ/2024_BEOTKKOTTHON_TEAM_24_BE/assets/67987132/91f63273-ac0a-4b1e-a3f2-7ea1fca9ac68">
+
+### 클래스 다이어그램
+<img width="1402" alt="스크린샷 2024-03-24 오전 5 06 08" src="https://github.com/goormthon-Univ/2024_BEOTKKOTTHON_TEAM_24_BE/assets/67987132/dc5db43f-33ff-4bf7-99db-09c35ba48992">
