@@ -1,6 +1,7 @@
 package goorm.reinput.insight.controller;
 
 import goorm.reinput.global.auth.PrincipalDetails;
+import goorm.reinput.insight.domain.InsightRecommend;
 import goorm.reinput.insight.domain.dto.*;
 import goorm.reinput.insight.service.InsightService;
 import goorm.reinput.user.service.UserService;
@@ -25,12 +26,21 @@ public class InsightController {
 
     private final InsightService insightService;
 
+    @Operation(summary = "인사이트 추천 데이터 반환", description = "유저의 직무에 따라 추천 인사이트를 반환하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
+    @GetMapping("/recommend")
+    public ResponseEntity<List<InsightRecommend>> getRecommendInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        log.info("[InsightController] getRecommendInsight {} called", principalDetails.getUserId());
+        // 인사이트 리스트 반환
+        return ResponseEntity.ok().body(insightService.getRecommendInsight(principalDetails.getUserId()));
+    }
+
     @Operation(summary = "인사이트 저장", description = "유저가 인사이트를 등록할 때 사용하는 API")
     @ApiResponses({@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @PostMapping()
-    public void saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
+    public ResponseEntity<Long> saveInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody InsightCreateDto insightCreateDto) {
         log.info("[InsightController] saveInsight {} called", principalDetails.getUserId());
-        insightService.saveInsight(principalDetails.getUserId(), insightCreateDto);
+        return ResponseEntity.ok().body(insightService.saveInsight(principalDetails.getUserId(), insightCreateDto));
     }
 
     @Operation(summary = "인사이트 상세보기", description = "유저가 인사이트의 상세정보를 확인할 때 사용하는 API")
@@ -92,15 +102,15 @@ public class InsightController {
     @Operation(summary = "공유된 폴더 url 접속하기", description = "유저의 폴더 내 인사이트 리스트를 볼 수 있는 url에 접속합니다.")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
     @GetMapping("/share")
-    public ResponseEntity<List<InsightShareResponseDto>> accessSharedFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam("token") String token) {
-        Long userId = principalDetails.getUserId();
-        log.info("[InsightController] accessSharedFolder {} called", userId);
-        return ResponseEntity.ok().body(insightService.accessSharedFolder(userId, token));
+    public ResponseEntity<List<InsightShareResponseDto>> accessSharedFolder(@RequestParam("token") String token) {
+
+        log.info("[InsightController] accessSharedFolder called");
+        return ResponseEntity.ok().body(insightService.accessSharedFolder(token));
     }
 
     @Operation(summary = "이미지 업로드하기", description = "유저가 이미지를 업로드 할 때 마다 이 api를 호출하면 됩니다.")
     @ApiResponses({@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401"), @ApiResponse(responseCode = "403"), @ApiResponse(responseCode = "500")})
-    @PostMapping("/image")
+    @PostMapping(value = "/image", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadImage(final @AuthenticationPrincipal PrincipalDetails principalDetails,
                                               @RequestParam("image") MultipartFile image) {
         if (image.isEmpty()) {

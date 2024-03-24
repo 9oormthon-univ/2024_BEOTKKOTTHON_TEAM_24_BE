@@ -28,6 +28,7 @@ public class Folder extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+
     @JsonManagedReference
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Insight> insightList;

@@ -60,7 +60,8 @@ public class FolderService {
         }
         if(folderName == null) {
             log.error("[FolderService] folderName is null");
-            throw new IllegalArgumentException("folderName is null");
+            folderName = "null folder";
+           // throw new IllegalArgumentException("folderName is null");
         }
         if(folderColor == null) {
             log.error("[FolderService] folderColor is null");
@@ -106,15 +107,20 @@ public class FolderService {
     }
     // userId 검색후 공유를 원하는 folder를 찾아서 copy
     @Transactional
-    public void copyFolder(Long userId, Long folderId) {
+    public void copyFolder(Long userId, String token) {
+        // 토큰 해독
+        String decryptedString = AESUtil.decrypt(token);
+        String[] parts = decryptedString.split("@");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Decrypted data format is incorrect.");
+        }
+
+        Long folderId = Long.parseLong(parts[0]);
+        boolean isCopyable = Boolean.parseBoolean(parts[1]);
         log.info("[FolderService] copyFolder {} called", userId);
         if (userId == null) {
             log.error("[FolderService] userId is null");
             throw new IllegalArgumentException("userId is null");
-        }
-        if (folderId == null) {
-            log.error("[FolderService] folderId is null");
-            throw new IllegalArgumentException("folderId is null");
         }
 
         Folder folder = folderRepository.findById(folderId)
@@ -178,8 +184,7 @@ public class FolderService {
         String toEncrypt = folderShareDto.getFolderId() + "@" + folderShareDto.isCopyable();
         String encryptedString = AESUtil.encrypt(toEncrypt);
 
-        //TODO 도메인으로 변경요망
-        String baseURL = "http://localhost:8080";
+        String baseURL = "https://reinput.info";
 
         return FolderShareResponseDto.builder()
                 .url(String.format("%s/insight/share?token=%s", baseURL, encryptedString))
