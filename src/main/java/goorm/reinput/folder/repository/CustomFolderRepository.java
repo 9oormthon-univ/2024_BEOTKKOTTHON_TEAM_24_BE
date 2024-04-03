@@ -42,6 +42,7 @@ public class CustomFolderRepository {
                 .select(folder.folderId, folder.folderName, folder.folderColor, insight.count())
                 .from(folder)
                 .leftJoin(folder.insightList, insight)
+                .where(folder.user.userId.eq(userId))
                 .groupBy(folder.folderId)
                 .orderBy(folder.folderId.asc())
                 .fetch()
