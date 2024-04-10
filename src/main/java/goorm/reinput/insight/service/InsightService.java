@@ -126,7 +126,7 @@ public class InsightService {
                     .folderName(insight.getFolder().getFolderName())
                     .folderId(folderId)
                     .isCopyable(isCopyable)
-                    .hashTagList(hashTags)
+                    .insightTagList(hashTags)
                     .insightImageList(insightImages)
                     .build();
         }).collect(Collectors.toList());
@@ -197,7 +197,7 @@ public class InsightService {
             hashTagRepository.delete(tag);
         }
 
-        List<String> hashTagNameList = dto.getHashTagList();
+        List<String> hashTagNameList = dto.getInsightTagList();
         for (String tag : hashTagNameList) {
             HashTag hashTag = HashTag.builder()
                     .insight(insight)
@@ -263,7 +263,7 @@ public class InsightService {
                 ht.add(h.getHashTagName());
             }
 
-            return InsightSimpleResponseDto.builder().insightId(insight.getInsightId()).insightSummary(insight.getInsightSummary()).insightTitle(insight.getInsightTitle()).insightMainImage(insight.getInsightMainImage()).hashTagList(ht).build();
+            return InsightSimpleResponseDto.builder().insightId(insight.getInsightId()).insightSummary(insight.getInsightSummary()).insightTitle(insight.getInsightTitle()).insightMainImage(insight.getInsightMainImage()).insightTagList(ht).build();
         }).collect(Collectors.toList());
     }
 
@@ -306,7 +306,7 @@ public class InsightService {
                 insightMemo(insight.getInsightMemo()).
                 insightSource(insight.getInsightSource()).
                 viewCount(insight.getViewCount()).
-                hashTagList(hashTagNameList).
+                insightTagList(hashTagNameList).
                 insightImageList(insightImageNameList).
                 isEnable(reminder.getIsEnable()).
                 folderName(folder.getFolderName()).folderId(folder.getFolderId()).
@@ -354,7 +354,7 @@ public class InsightService {
 
         }
 
-        List<String> hashTagList = dto.getHashTagList();
+        List<String> hashTagList = dto.getInsightTagList();
         for (String tag : hashTagList) {
             HashTag hashTag = HashTag.builder()
                     .insight(insight)

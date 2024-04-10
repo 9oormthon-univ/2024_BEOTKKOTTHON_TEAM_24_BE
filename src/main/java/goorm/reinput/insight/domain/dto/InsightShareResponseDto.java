@@ -1,6 +1,5 @@
 package goorm.reinput.insight.domain.dto;
 
-import goorm.reinput.reminder.domain.RemindType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class InsightShareResponseDto {
     private String insightMemo;
     private String insightSource;
     private Integer viewCount;
-    private List<String> hashTagList;
+    private List<String> insightTagList;
     private List<String> insightImageList;
 
     private String folderName;

@@ -1,7 +1,5 @@
 package goorm.reinput.insight.domain.dto;
 
-import goorm.reinput.insight.domain.HashTag;
-import goorm.reinput.insight.domain.InsightImage;
 import goorm.reinput.reminder.domain.RemindType;
 import goorm.reinput.reminder.domain.ReminderQuestion;
 import lombok.*;
@@ -23,7 +21,7 @@ public class InsightResponseDto {
     private String insightMemo;
     private String insightSource;
     private Integer viewCount;
-    private List<String> hashTagList;
+    private List<String> insightTagList;
     private List<String> insightImageList;
     private boolean isEnable;
     private RemindType remindType;

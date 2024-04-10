@@ -21,7 +21,7 @@ public class InsightModifyDto {
     private String insightMemo;
     private String insightSource;
 
-    private List<String> hashTagList;
+    private List<String> insightTagList;
     private List<String> insightImageList;
 
     private boolean enable;

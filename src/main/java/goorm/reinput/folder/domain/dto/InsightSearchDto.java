@@ -2,7 +2,6 @@ package goorm.reinput.folder.domain.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -15,18 +14,18 @@ public class InsightSearchDto {
     private String insightTitle;
     private String insightSummary;
     private String insightMemo;
-    private List<String> hashTagList;
+    private List<String> insightTagList;
     // 검색 우선순위를 위한 필드들
     private transient int matchScore;
 
     @Builder
-    public InsightSearchDto(Long insightId, String insightMainImage, String insightTitle, String insightSummary, String insightMemo, List<String> hashTagList) {
+    public InsightSearchDto(Long insightId, String insightMainImage, String insightTitle, String insightSummary, String insightMemo, List<String> insightTagList) {
         this.insightId = insightId;
         this.insightMainImage = insightMainImage;
         this.insightTitle = insightTitle;
         this.insightSummary = insightSummary;
         this.insightMemo = insightMemo;
-        this.hashTagList = hashTagList;
+        this.insightTagList = insightTagList;
     }
 
     public void calculateMatchScores(String searchKeyword) {
@@ -50,7 +49,7 @@ public class InsightSearchDto {
         }
 
         // 태그 목록 중 하나라도 검색어를 포함하고 있으면 2점 추가
-        if (this.hashTagList != null && this.hashTagList.stream().anyMatch(tag -> tag.toLowerCase().contains(keywordLowerCase))) {
+        if (this.insightTagList != null && this.insightTagList.stream().anyMatch(tag -> tag.toLowerCase().contains(keywordLowerCase))) {
             this.matchScore += 2;
         }
     }

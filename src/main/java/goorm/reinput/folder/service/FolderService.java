@@ -210,7 +210,7 @@ public class FolderService {
                 .insightMainImage(insightSearchDto.getInsightMainImage())
                 .insightTitle(insightSearchDto.getInsightTitle())
                 .insightSummary(insightSearchDto.getInsightSummary())
-                .hashTagList(insightSearchDto.getHashTagList())
+                .insightTagList(insightSearchDto.getInsightTagList())
                 .build())
                 .collect(Collectors.toList());
         }

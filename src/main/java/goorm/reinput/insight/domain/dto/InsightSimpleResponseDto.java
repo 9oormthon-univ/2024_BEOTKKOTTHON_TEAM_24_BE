@@ -14,5 +14,5 @@ public class InsightSimpleResponseDto {
     private String insightMainImage;
     private String insightTitle;
     private String insightSummary;
-    private List<String> hashTagList;
+    private List<String> insightTagList;
 }

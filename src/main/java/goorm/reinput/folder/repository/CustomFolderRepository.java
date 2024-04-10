@@ -130,7 +130,7 @@ public class CustomFolderRepository {
                     .insightTitle(dto.getInsightTitle())
                     .insightSummary(dto.getInsightSummary())
                     .insightMemo(dto.getInsightMemo())
-                    .hashTagList(tags) // 태그 리스트 설정
+                    .insightTagList(tags) // 태그 리스트 설정
                     .build();
         }).collect(Collectors.toList());
     }

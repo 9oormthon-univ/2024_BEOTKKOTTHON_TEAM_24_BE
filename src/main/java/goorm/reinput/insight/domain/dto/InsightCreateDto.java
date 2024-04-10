@@ -18,7 +18,7 @@ public class InsightCreateDto {
     private String insightMemo;
     private String insightSource;
     private Integer viewCount;
-    private List<String> hashTagList;
+    private List<String> insightTagList;
     private List<String> insightImageList;
     private boolean enable;
     private RemindType remindType;
