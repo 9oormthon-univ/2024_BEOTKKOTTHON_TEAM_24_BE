@@ -8,7 +8,6 @@ import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.user.domain.dto.TokenResponseDto;
 import goorm.reinput.user.domain.dto.UserLoginDto;
 import goorm.reinput.user.domain.dto.UserSignupDto;
-import goorm.reinput.user.repository.CustomUserRepository;
 import goorm.reinput.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CustomUserRepository customUserRepository;
     private final FolderRepository folderRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TokenProvider tokenProvider;
@@ -53,7 +52,7 @@ public class UserService {
     public TokenResponseDto login(UserLoginDto userLoginDto){
         log.info("[UserService] login userEmail : {}", userLoginDto.getUserEmail());
         //todo : login useremail custom exception
-        User user = customUserRepository.findByUserEmail(userLoginDto.getUserEmail())
+        User user = userRepository.findByUserEmail(userLoginDto.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. : " + userLoginDto.getUserEmail()));
 
         if (!bCryptPasswordEncoder.matches(userLoginDto.getUserPassword(), user.getUserPassword())) {
@@ -78,7 +77,7 @@ public class UserService {
 
     public void deactivate(Long userId) {
         log.info("[UserService] delete userId : {}", userId);
-        customUserRepository.deactivateUserByUserId(userId);
+        userRepository.deactivateUserByUserId(userId);
     }
 
 }
