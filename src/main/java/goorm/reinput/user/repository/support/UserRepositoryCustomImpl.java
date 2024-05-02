@@ -1,34 +1,29 @@
-package goorm.reinput.user.repository;
+package goorm.reinput.user.repository.support;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import goorm.reinput.user.domain.User;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 import static goorm.reinput.user.domain.QUser.user;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
-public class CustomUserRepository {
-    private final EntityManager entityManager;
+public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-    @Autowired
-    public CustomUserRepository(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        this.queryFactory = new JPAQueryFactory(this.entityManager);
-    }
 
+    @Override
     public Optional<User> findByUserEmail(String userEmail) {
         return Optional.ofNullable(queryFactory.selectFrom(user)
                 .where(user.userEmail.eq(userEmail))
                 .fetchOne());
     }
-    @Modifying(clearAutomatically = true)
+
+    @Override
     public void deactivateUserByUserId(Long userId) {
         queryFactory.update(user)
                 .where(user.userId.eq(userId))
@@ -36,7 +31,7 @@ public class CustomUserRepository {
                 .execute();
     }
 
-    @Modifying(clearAutomatically = true)
+    @Override
     public void deleteByUserId(Long userId) {
         queryFactory.delete(user)
                 .where(user.userId.eq(userId))

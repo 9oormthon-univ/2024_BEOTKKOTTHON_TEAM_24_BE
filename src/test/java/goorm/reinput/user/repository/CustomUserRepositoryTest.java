@@ -20,7 +20,7 @@ class CustomUserRepositoryTest {
     private EntityManager em;
     private JPAQueryFactory queryFactory;
     @Autowired
-    private CustomUserRepository customUserRepository;
+    private UserRepository userRepository;
 
 
     @BeforeEach
@@ -47,14 +47,14 @@ class CustomUserRepositoryTest {
     }
     @Test
     public void findByUserEmail() {
-        User user = customUserRepository.findByUserEmail("user1").get();
+        User user = userRepository.findByUserEmail("user1").get();
         assertEquals("user1", user.getUserEmail());
     }
 
     @Test
     public void deactivateUserByUserId() {
-        customUserRepository.deactivateUserByUserId(1L);
-        User user = customUserRepository.findByUserEmail("user1").get();
+        userRepository.deactivateUserByUserId(1L);
+        User user = userRepository.findByUserEmail("user1").get();
         Assertions.assertThat(user.isEnable()).isFalse();
     }
 
