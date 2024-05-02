@@ -8,6 +8,8 @@ import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.user.domain.dto.TokenResponseDto;
 import goorm.reinput.user.domain.dto.UserLoginDto;
 import goorm.reinput.user.domain.dto.UserSignupDto;
+import goorm.reinput.user.exception.CustomUserException;
+import goorm.reinput.user.exception.UserErrorCode;
 import goorm.reinput.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,11 +55,11 @@ public class UserService {
         log.info("[UserService] login userEmail : {}", userLoginDto.getUserEmail());
         //todo : login useremail custom exception
         User user = userRepository.findByUserEmail(userLoginDto.getUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. : " + userLoginDto.getUserEmail()));
+                .orElseThrow(() -> new CustomUserException(UserErrorCode.USER_NOT_FOUND));
 
         if (!bCryptPasswordEncoder.matches(userLoginDto.getUserPassword(), user.getUserPassword())) {
-            //todo : login password custom exception
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            log.warn("[UserService] login password not match userEmail : {}", userLoginDto.getUserEmail());
+            throw new CustomUserException(UserErrorCode.USER_PASSWORD_NOT_MATCH);
         }
 
         return TokenResponseDto.builder()
