@@ -14,7 +14,12 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("http://192.168.0.*"));
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "http://192.168.0.*",
+                "http://localhost:3000",
+                "https://2024-beotkkotthon-team-24-fe.vercel.app",
+                "https://reinput.info",
+                "https://www.reinput.info"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         config.setAllowCredentials(true);
