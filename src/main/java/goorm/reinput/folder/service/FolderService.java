@@ -34,7 +34,6 @@ public class FolderService {
     private final InsightRepository insightRepository;
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
-    private final CustomFolderRepository customFolderRepository;
     private final CustomInsightRepository customInsightRepository;
 
     public List<FolderResponseDto> getFolderList(Long userId) {
@@ -44,7 +43,7 @@ public class FolderService {
             throw new IllegalArgumentException("userId is null");
         }
 
-        return customFolderRepository.getFolderList(userId).orElseThrow(() -> {
+        return folderRepository.getFolderList(userId).orElseThrow(() -> {
             log.error("[FolderService] getFolderList failed");
             //todo : exception handling
             return new IllegalArgumentException("getFolderList failed");
@@ -89,7 +88,7 @@ public class FolderService {
             throw new IllegalArgumentException("userId is null");
         }
 
-        customFolderRepository.updateFolder(userId, folderDto);
+        folderRepository.updateFolder(userId, folderDto);
     }
 
     @Transactional
@@ -176,7 +175,7 @@ public class FolderService {
         /* folder가 userId에 속하는지 확인
          없으면 exception
          있으면 share link 생성*/
-        if(!folderRepository.findByFolderIdAndUser(folderShareDto.getFolderId(), userRepository.findByUserId(userId).orElseThrow()).isPresent()) {
+        if(folderRepository.findByFolderIdAndUser(folderShareDto.getFolderId(), userRepository.findByUserId(userId).orElseThrow()).isEmpty()) {
             log.error("[FolderService] folder not found with id {}", folderShareDto.getFolderId());
             throw new IllegalArgumentException("folder not found with id " + folderShareDto.getFolderId());
         }
@@ -193,9 +192,9 @@ public class FolderService {
 
 
     public List<InsightSimpleResponseDto> findAllInsights(Long userId, String keyword) {
-        //todo: insight로 책임 이동
         log.info("[FolderService] findAllInsights {} called", userId);
-        List<InsightSearchDto> insightSearchDtos = customFolderRepository.searchInsight(customFolderRepository.searchInsightInFolder(userId, keyword));
+        // todo : searchInsights 쿼리 최적화 버전 테스트후 적용
+        List<InsightSearchDto> insightSearchDtos = folderRepository.searchInsight(folderRepository.searchInsightInFolder(userId, keyword));
 
         // Comparator를 정의하여 제목, 요약, 태그, 메모 순으로 정렬
         insightSearchDtos.forEach(insightSearchDto -> insightSearchDto.calculateMatchScores(keyword));

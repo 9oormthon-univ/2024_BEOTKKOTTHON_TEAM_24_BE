@@ -139,7 +139,6 @@ public class FolderRepositoryCustomImpl implements FolderRepositoryCustom{
         List<Tuple> results = getSearchTuples(userId, searchWord);
 
         // 결과를 Insight ID 별로 DTO와 태그 리스트로 매핑
-        //todo: 메소드 추출
         Map<Long, InsightSearchDto> insightMap = new HashMap<>();
         Map<Long, List<String>> tagsMap = new HashMap<>();
 
