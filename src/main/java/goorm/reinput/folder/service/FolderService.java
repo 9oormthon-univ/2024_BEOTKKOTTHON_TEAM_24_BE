@@ -213,6 +213,6 @@ public class FolderService {
                 .insightTagList(insightSearchDto.getInsightTagList())
                 .build())
                 .collect(Collectors.toList());
-        }
+    }
 
 }
