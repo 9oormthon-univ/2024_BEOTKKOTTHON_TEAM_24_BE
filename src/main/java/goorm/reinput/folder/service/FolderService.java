@@ -3,7 +3,8 @@ package goorm.reinput.folder.service;
 import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
 import goorm.reinput.folder.domain.dto.*;
-import goorm.reinput.folder.repository.CustomFolderRepository;
+import goorm.reinput.folder.exception.CustomFolderException;
+import goorm.reinput.folder.exception.FolderErrorCode;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.global.util.AESUtil;
 import goorm.reinput.insight.domain.HashTag;
@@ -39,14 +40,14 @@ public class FolderService {
     public List<FolderResponseDto> getFolderList(Long userId) {
         log.info("[FolderService] getFolderList {} called", userId);
         if(userId == null) {
+            //todo : Controller에서 @valid이용
             log.error("[FolderService] userId is null");
             throw new IllegalArgumentException("userId is null");
         }
 
         return folderRepository.getFolderList(userId).orElseThrow(() -> {
             log.error("[FolderService] getFolderList failed");
-            //todo : exception handling
-            return new IllegalArgumentException("getFolderList failed");
+            return new CustomFolderException(FolderErrorCode.FOLDER_NOT_FOUND);
         });
     }
 
@@ -58,9 +59,8 @@ public class FolderService {
             throw new IllegalArgumentException("userId is null");
         }
         if(folderName == null) {
-            log.error("[FolderService] folderName is null");
-            folderName = "null folder";
-           // throw new IllegalArgumentException("folderName is null");
+            log.info("[FolderService] folderName is null");
+            folderName = "무제 폴더";
         }
         if(folderColor == null) {
             log.error("[FolderService] folderColor is null");
@@ -68,9 +68,8 @@ public class FolderService {
         }
         Folder folder = Folder.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> {
-                    //todo : exception handling
                     log.error("[FolderService] user not found");
-                    return new IllegalArgumentException("user not found");
+                    return new CustomFolderException(FolderErrorCode.USER_NOT_FOUND);
                 }))
                 .folderName(folderName)
                 .folderColor(folderColor)
@@ -85,6 +84,7 @@ public class FolderService {
 
         if(userId == null) {
             log.error("[FolderService] userId is null");
+            //todo : Controller에서 @valid이용
             throw new IllegalArgumentException("userId is null");
         }
 
@@ -96,10 +96,12 @@ public class FolderService {
         log.info("[FolderService] deleteFolder {} called", userId);
         if(userId == null) {
             log.error("[FolderService] userId is null");
+            //todo : Controller에서 @valid이용
             throw new IllegalArgumentException("userId is null");
         }
         if(folderId == null) {
             log.error("[FolderService] folderId is null");
+            //todo : Controller에서 @valid이용
             throw new IllegalArgumentException("folderId is null");
         }
         folderRepository.deleteById(folderId);
@@ -109,6 +111,7 @@ public class FolderService {
     public void copyFolder(Long userId, String token) {
         // 토큰 해독
         String decryptedString = AESUtil.decrypt(token);
+        assert decryptedString != null;
         String[] parts = decryptedString.split("@");
         if (parts.length != 2) {
             throw new IllegalArgumentException("Decrypted data format is incorrect.");
@@ -123,10 +126,10 @@ public class FolderService {
         }
 
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new IllegalArgumentException("folder not found with id " + folderId));
+                .orElseThrow(() -> new CustomFolderException(FolderErrorCode.FOLDER_NOT_FOUND));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                .orElseThrow(() -> new CustomFolderException(FolderErrorCode.USER_NOT_FOUND));
 
         Folder savedFolder = folderRepository.save(Folder.builder()
                 .user(user)
@@ -135,7 +138,7 @@ public class FolderService {
                 .build());
 
         customInsightRepository.findByInsightFolderId(folderId)
-                .orElseThrow(() -> new IllegalArgumentException("insight not found with folderId " + folderId))
+                .orElseThrow(() -> new CustomFolderException(FolderErrorCode.INSIGHT_NOT_FOUND_BY_FOLDER))
                 .forEach(insight -> copyInsightWithDependencies(insight, savedFolder));
     }
 
@@ -177,7 +180,7 @@ public class FolderService {
          있으면 share link 생성*/
         if(folderRepository.findByFolderIdAndUser(folderShareDto.getFolderId(), userRepository.findByUserId(userId).orElseThrow()).isEmpty()) {
             log.error("[FolderService] folder not found with id {}", folderShareDto.getFolderId());
-            throw new IllegalArgumentException("folder not found with id " + folderShareDto.getFolderId());
+            throw new CustomFolderException(FolderErrorCode.FOLDER_NOT_FOUND);
         }
 
         String toEncrypt = folderShareDto.getFolderId() + "@" + folderShareDto.isCopyable();
