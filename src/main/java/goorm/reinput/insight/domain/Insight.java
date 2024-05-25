@@ -34,6 +34,7 @@ public class Insight extends BaseTimeEntity {
     @JsonBackReference
     private Folder folder;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "insight", cascade = CascadeType.ALL, orphanRemoval = true)
     private Reminder reminder;
 
