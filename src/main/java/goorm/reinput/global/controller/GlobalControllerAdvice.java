@@ -18,10 +18,10 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
      * exception : ValidationEx001
      * category : MethodArgumentNotValidException
      */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponseDto("ValidationEx001", e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
-    }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+//        return ResponseEntity.badRequest().body(new ErrorResponseDto("ValidationEx001", e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+//    }
     /**
      * exception : UserDomainException
      * category : CustomUserException
