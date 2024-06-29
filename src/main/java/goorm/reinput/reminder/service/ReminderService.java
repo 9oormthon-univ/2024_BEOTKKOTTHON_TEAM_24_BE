@@ -63,6 +63,8 @@ public class ReminderService {
         /*reminder
         * 오늘 날짜에 모두 응답했는지 확인
          */
+
+        //todo : 빈 리스트일때 ture 반환 오류 수정
         boolean todayClear = reminderQuestionQueryDtos.stream().allMatch(ReminderQuestionQueryDto -> ReminderQuestionQueryDto.getAnsweredAt() != null);
 
         return ReminderQuestionResponseDto.builder()
