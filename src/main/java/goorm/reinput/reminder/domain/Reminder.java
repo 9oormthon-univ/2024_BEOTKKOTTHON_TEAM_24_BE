@@ -1,5 +1,7 @@
 package goorm.reinput.reminder.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import goorm.reinput.insight.domain.Insight;
 import jakarta.persistence.*;
@@ -23,12 +25,15 @@ public class Reminder extends BaseTimeEntity {
     private Boolean isEnable;
     private LocalDateTime lastRemindedAt;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     private Insight insight;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
     private ReminderDate reminderDate;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "reminder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReminderQuestion> reminderQuestion;
 

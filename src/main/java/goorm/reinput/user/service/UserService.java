@@ -1,11 +1,12 @@
 package goorm.reinput.user.service;
 
+import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.folder.domain.FolderColor;
 import goorm.reinput.folder.repository.FolderRepository;
 import goorm.reinput.global.security.jwt.TokenProvider;
 import goorm.reinput.user.domain.User;
-import goorm.reinput.folder.domain.Folder;
 import goorm.reinput.user.domain.dto.TokenResponseDto;
+import goorm.reinput.user.domain.dto.UserInfoDto;
 import goorm.reinput.user.domain.dto.UserLoginDto;
 import goorm.reinput.user.domain.dto.UserSignupDto;
 import goorm.reinput.user.exception.CustomUserException;
@@ -51,7 +52,7 @@ public class UserService {
         });
     }
 
-    public TokenResponseDto login(UserLoginDto userLoginDto){
+    public TokenResponseDto login(UserLoginDto userLoginDto) {
         log.info("[UserService] login userEmail : {}", userLoginDto.getUserEmail());
         //todo : login useremail custom exception
         User user = userRepository.findByUserEmail(userLoginDto.getUserEmail())
@@ -82,4 +83,14 @@ public class UserService {
         userRepository.deactivateUserByUserId(userId);
     }
 
+    public UserInfoDto getUserInfo(Long userId) {
+        log.info("[UserService] getUserInfo : {}", userId);
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomUserException(UserErrorCode.USER_NOT_FOUND));
+
+        return UserInfoDto.builder()
+                .userEmail(user.getUserEmail())
+                .userName(user.getUserName())
+                .job(user.getJob())
+                .build();
+    }
 }

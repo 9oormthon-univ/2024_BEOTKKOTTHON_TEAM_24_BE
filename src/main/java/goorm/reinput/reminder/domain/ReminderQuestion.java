@@ -1,5 +1,6 @@
 package goorm.reinput.reminder.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import goorm.reinput.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class ReminderQuestion extends BaseTimeEntity {
     private Long questionId;
     private LocalDateTime answeredAt;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Reminder reminder;
 
