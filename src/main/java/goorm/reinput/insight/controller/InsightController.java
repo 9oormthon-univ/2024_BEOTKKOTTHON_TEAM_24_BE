@@ -122,8 +122,14 @@ public class InsightController {
     }
 
     @Operation(summary = "임시 추천 인사이트", description = "랜덤으로 인사이트 5개 반환")
-    @GetMapping("/recommend/rand")
-    public ResponseEntity<List<InsightRecommend>> randRecommendInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails){
+    @GetMapping("/recommend/rands")
+    public ResponseEntity<List<InsightRecommend>> randRecommendInsights(final @AuthenticationPrincipal PrincipalDetails principalDetails){
         return ResponseEntity.ok().body(insightService.getRandRecommendInsight());
+    }
+
+    @Operation(summary = "임시 추천 인사이트 단건", description = "랜덤으로 인사이트 1개 반환")
+    @GetMapping("/recommend/rand")
+    public ResponseEntity<InsightRecommend> randRecommendInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails){
+        return ResponseEntity.ok().body(insightService.getRandRecommendInsight().get(0));
     }
 }
