@@ -387,4 +387,20 @@ public class InsightService {
 
         return InsightRecommend.getRecommendInsight(job);
     }
+
+    public List<InsightRecommend> getRandRecommendInsight() {
+        //todo n+1 문제 및 fetch 최적화
+        return insightRepository.randInsight()
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(insight -> InsightRecommend.builder()
+                        .insightMainImage(insight.getInsightMainImage())
+                        .insightTitle(insight.getInsightTitle())
+                        .insightSummary(insight.getInsightSummary())
+                        .hashTagList(insight.getHashTagList().stream()
+                                .map(HashTag::getHashTagName)
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

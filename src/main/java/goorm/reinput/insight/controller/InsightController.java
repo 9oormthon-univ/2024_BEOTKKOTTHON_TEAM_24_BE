@@ -121,4 +121,9 @@ public class InsightController {
         return ResponseEntity.ok().body(imageUrl);
     }
 
+    @Operation(summary = "임시 추천 인사이트", description = "랜덤으로 인사이트 5개 반환")
+    @GetMapping("/recommend/rand")
+    public ResponseEntity<List<InsightRecommend>> randRecommendInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails){
+        return ResponseEntity.ok().body(insightService.getRandRecommendInsight());
+    }
 }
