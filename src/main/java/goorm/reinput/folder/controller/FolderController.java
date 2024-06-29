@@ -5,10 +5,9 @@ import goorm.reinput.folder.service.FolderService;
 import goorm.reinput.global.auth.PrincipalDetails;
 import goorm.reinput.insight.domain.dto.InsightSimpleResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -48,7 +47,7 @@ public class FolderController {
 
     @Operation(summary = "인사이트 검색", description = "유저가 전체 인사이트를 검색할 때 사용하는 API")
     @PostMapping("/search")
-    public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody SearchReqDto searchReqDto) {
+    public ResponseEntity<List<InsightSimpleResponseDto>> searchInsight(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody SearchReqDto searchReqDto) {
         log.info("[FolderController] searchInsight {} called", principalDetails.getUserId());
         return ResponseEntity.ok().body(folderService.findAllInsights(principalDetails.getUserId(), searchReqDto.getSearch()));
     }
@@ -61,7 +60,7 @@ public class FolderController {
     }
     @Operation(summary = "폴더 수정", description = "유저가 폴더를 수정할 때 사용하는 API")
     @PatchMapping
-    public ResponseEntity<String> updateFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @RequestBody FolderDto folderDto) {
+    public ResponseEntity<String> updateFolder(final @AuthenticationPrincipal PrincipalDetails principalDetails, final @Valid @RequestBody FolderDto folderDto) {
         log.info("[FolderController] updateFolder {} called", principalDetails.getUserId());
         folderService.updateFolder(principalDetails.getUserId(), folderDto);
         return ResponseEntity.ok().body("success");
