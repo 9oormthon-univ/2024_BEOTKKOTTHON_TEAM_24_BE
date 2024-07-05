@@ -114,6 +114,8 @@ public class InsightService {
                     .map(InsightImage::getInsightImageUrl)
                     .collect(Collectors.toList());
 
+            Folder folder = folderRepository.findByFolderId(insight.getFolder().getFolderId()).orElseThrow(() -> new IllegalArgumentException("Folder not exists"));
+
             return InsightShareResponseDto.builder()
                     .insightId(insight.getInsightId())
                     .insightTitle(insight.getInsightTitle())
@@ -128,6 +130,7 @@ public class InsightService {
                     .isCopyable(isCopyable)
                     .insightTagList(hashTags)
                     .insightImageList(insightImages)
+                    .folderColor(folder.getFolderColor())
                     .build();
         }).collect(Collectors.toList());
 
