@@ -269,14 +269,22 @@ public class InsightService {
         List<Insight> insightList = insightRepository.findByInsightFolderId(folderId).orElseGet(Collections::emptyList);
 
         return insightList.stream().map(insight -> {
-
             List<HashTag> hashTagList = hashTagRepository.findByInsight(insight).orElseGet(Collections::emptyList);
-            List<String> ht = new ArrayList<>();
-            for (HashTag h : hashTagList) {
-                ht.add(h.getHashTagName());
-            }
+            List<String> ht = hashTagList.stream()
+                    .map(HashTag::getHashTagName)
+                    .collect(Collectors.toList());
 
-            return InsightSimpleResponseDto.builder().insightId(insight.getInsightId()).insightSummary(insight.getInsightSummary()).insightTitle(insight.getInsightTitle()).insightMainImage(insight.getInsightMainImage()).insightTagList(ht).build();
+            // FolderColor 가져오기
+            FolderColor folderColor = insight.getFolder().getFolderColor();
+
+            return InsightSimpleResponseDto.builder()
+                    .insightId(insight.getInsightId())
+                    .insightSummary(insight.getInsightSummary())
+                    .insightTitle(insight.getInsightTitle())
+                    .insightMainImage(insight.getInsightMainImage())
+                    .insightTagList(ht)
+                    .folderColor(folderColor)  // 추가된 필드
+                    .build();
         }).collect(Collectors.toList());
     }
 
