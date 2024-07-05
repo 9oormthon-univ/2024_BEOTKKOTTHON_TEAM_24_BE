@@ -159,13 +159,23 @@ public class InsightService {
         List<InsightSimpleResponseDto> filteredInsightList = insightList.stream()
                 .filter(insight -> insight.getHashTagList().stream()
                         .anyMatch(hashTag -> hashTag.getHashTagName().toLowerCase().contains(tag.toLowerCase())))
-                .map(insight -> new InsightSimpleResponseDto(
-                        insight.getInsightId(),
-                        insight.getInsightMainImage(),
-                        insight.getInsightTitle(),
-                        insight.getInsightSummary(),
-                        insight.getHashTagList().stream().map(HashTag::getHashTagName).collect(Collectors.toList())
-                ))
+                .map(insight -> {
+                    List<String> hashTagNames = insight.getHashTagList().stream()
+                            .map(HashTag::getHashTagName)
+                            .collect(Collectors.toList());
+
+                    // FolderColor 가져오기
+                    FolderColor folderColor = insight.getFolder().getFolderColor();
+
+                    return InsightSimpleResponseDto.builder()
+                            .insightId(insight.getInsightId())
+                            .insightMainImage(insight.getInsightMainImage())
+                            .insightTitle(insight.getInsightTitle())
+                            .insightSummary(insight.getInsightSummary())
+                            .insightTagList(hashTagNames)
+                            .folderColor(folderColor)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return filteredInsightList;
