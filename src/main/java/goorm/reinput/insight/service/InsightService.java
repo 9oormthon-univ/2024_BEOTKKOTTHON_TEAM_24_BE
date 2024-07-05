@@ -310,6 +310,7 @@ public class InsightService {
                 insightImageList(insightImageNameList).
                 isEnable(reminder.getIsEnable()).
                 folderName(folder.getFolderName()).folderId(folder.getFolderId()).
+                folderColor(folder.getFolderColor()).
                 reminderQuestionList(reminderQuestionList);
 
         if (reminder.getIsEnable()) {
