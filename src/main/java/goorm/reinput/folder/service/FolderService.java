@@ -193,7 +193,6 @@ public class FolderService {
                 .build();
     }
 
-
     public List<InsightSimpleResponseDto> findAllInsights(Long userId, String keyword) {
         log.info("[FolderService] findAllInsights {} called", userId);
         // todo : searchInsights 쿼리 최적화 버전 테스트후 적용
@@ -206,15 +205,22 @@ public class FolderService {
                 .sorted(Comparator.comparing(InsightSearchDto::getMatchScore).reversed())
                 .toList();
 
+        return sortedInsightSearchDtos.stream()
+                .map(insightSearchDto -> {
+                    // Insight 엔티티를 조회하여 folderColor를 가져옴
+                    Insight insight = insightRepository.findByInsightId(insightSearchDto.getInsightId())
+                            .orElseThrow(() -> new IllegalArgumentException("Insight not found with id: " + insightSearchDto.getInsightId()));
+                    FolderColor folderColor = insight.getFolder().getFolderColor();
 
-        return sortedInsightSearchDtos.stream().map(insightSearchDto -> InsightSimpleResponseDto.builder()
-                .insightId(insightSearchDto.getInsightId())
-                .insightMainImage(insightSearchDto.getInsightMainImage())
-                .insightTitle(insightSearchDto.getInsightTitle())
-                .insightSummary(insightSearchDto.getInsightSummary())
-                .insightTagList(insightSearchDto.getInsightTagList())
-                .build())
+                    return InsightSimpleResponseDto.builder()
+                            .insightId(insightSearchDto.getInsightId())
+                            .insightMainImage(insightSearchDto.getInsightMainImage())
+                            .insightTitle(insightSearchDto.getInsightTitle())
+                            .insightSummary(insightSearchDto.getInsightSummary())
+                            .insightTagList(insightSearchDto.getInsightTagList())
+                            .folderColor(folderColor)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
-
 }

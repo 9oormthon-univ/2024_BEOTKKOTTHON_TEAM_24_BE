@@ -114,6 +114,8 @@ public class InsightService {
                     .map(InsightImage::getInsightImageUrl)
                     .collect(Collectors.toList());
 
+            Folder folder = folderRepository.findByFolderId(insight.getFolder().getFolderId()).orElseThrow(() -> new IllegalArgumentException("Folder not exists"));
+
             return InsightShareResponseDto.builder()
                     .insightId(insight.getInsightId())
                     .insightTitle(insight.getInsightTitle())
@@ -128,6 +130,7 @@ public class InsightService {
                     .isCopyable(isCopyable)
                     .insightTagList(hashTags)
                     .insightImageList(insightImages)
+                    .folderColor(folder.getFolderColor())
                     .build();
         }).collect(Collectors.toList());
 
@@ -156,13 +159,23 @@ public class InsightService {
         List<InsightSimpleResponseDto> filteredInsightList = insightList.stream()
                 .filter(insight -> insight.getHashTagList().stream()
                         .anyMatch(hashTag -> hashTag.getHashTagName().toLowerCase().contains(tag.toLowerCase())))
-                .map(insight -> new InsightSimpleResponseDto(
-                        insight.getInsightId(),
-                        insight.getInsightMainImage(),
-                        insight.getInsightTitle(),
-                        insight.getInsightSummary(),
-                        insight.getHashTagList().stream().map(HashTag::getHashTagName).collect(Collectors.toList())
-                ))
+                .map(insight -> {
+                    List<String> hashTagNames = insight.getHashTagList().stream()
+                            .map(HashTag::getHashTagName)
+                            .collect(Collectors.toList());
+
+                    // FolderColor 가져오기
+                    FolderColor folderColor = insight.getFolder().getFolderColor();
+
+                    return InsightSimpleResponseDto.builder()
+                            .insightId(insight.getInsightId())
+                            .insightMainImage(insight.getInsightMainImage())
+                            .insightTitle(insight.getInsightTitle())
+                            .insightSummary(insight.getInsightSummary())
+                            .insightTagList(hashTagNames)
+                            .folderColor(folderColor)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return filteredInsightList;
@@ -256,14 +269,22 @@ public class InsightService {
         List<Insight> insightList = insightRepository.findByInsightFolderId(folderId).orElseGet(Collections::emptyList);
 
         return insightList.stream().map(insight -> {
-
             List<HashTag> hashTagList = hashTagRepository.findByInsight(insight).orElseGet(Collections::emptyList);
-            List<String> ht = new ArrayList<>();
-            for (HashTag h : hashTagList) {
-                ht.add(h.getHashTagName());
-            }
+            List<String> ht = hashTagList.stream()
+                    .map(HashTag::getHashTagName)
+                    .collect(Collectors.toList());
 
-            return InsightSimpleResponseDto.builder().insightId(insight.getInsightId()).insightSummary(insight.getInsightSummary()).insightTitle(insight.getInsightTitle()).insightMainImage(insight.getInsightMainImage()).insightTagList(ht).build();
+            // FolderColor 가져오기
+            FolderColor folderColor = insight.getFolder().getFolderColor();
+
+            return InsightSimpleResponseDto.builder()
+                    .insightId(insight.getInsightId())
+                    .insightSummary(insight.getInsightSummary())
+                    .insightTitle(insight.getInsightTitle())
+                    .insightMainImage(insight.getInsightMainImage())
+                    .insightTagList(ht)
+                    .folderColor(folderColor)  // 추가된 필드
+                    .build();
         }).collect(Collectors.toList());
     }
 
@@ -310,6 +331,7 @@ public class InsightService {
                 insightImageList(insightImageNameList).
                 isEnable(reminder.getIsEnable()).
                 folderName(folder.getFolderName()).folderId(folder.getFolderId()).
+                folderColor(folder.getFolderColor()).
                 reminderQuestionList(reminderQuestionList);
 
         if (reminder.getIsEnable()) {

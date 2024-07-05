@@ -1,5 +1,6 @@
 package goorm.reinput.insight.domain.dto;
 
+import goorm.reinput.folder.domain.FolderColor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class InsightShareResponseDto {
 
     private String folderName;
     private Long folderId;
+    private FolderColor folderColor;
 
     private Boolean isCopyable;
 }

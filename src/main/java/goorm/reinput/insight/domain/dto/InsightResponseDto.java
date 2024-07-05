@@ -1,5 +1,6 @@
 package goorm.reinput.insight.domain.dto;
 
+import goorm.reinput.folder.domain.FolderColor;
 import goorm.reinput.reminder.domain.RemindType;
 import goorm.reinput.reminder.domain.ReminderQuestion;
 import lombok.*;
@@ -28,6 +29,7 @@ public class InsightResponseDto {
     private List<Integer> remindDays;
     private String folderName;
     private Long folderId;
+    private FolderColor folderColor;
 
     // 소유자가 볼 경우 리마인더 질문이 보임
     private List<ReminderQuestion> reminderQuestionList;

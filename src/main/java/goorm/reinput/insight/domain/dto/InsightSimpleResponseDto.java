@@ -1,5 +1,6 @@
 package goorm.reinput.insight.domain.dto;
 
+import goorm.reinput.folder.domain.FolderColor;
 import lombok.*;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public class InsightSimpleResponseDto {
     private String insightTitle;
     private String insightSummary;
     private List<String> insightTagList;
+    private FolderColor folderColor;
 }
