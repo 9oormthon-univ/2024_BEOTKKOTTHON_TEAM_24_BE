@@ -86,12 +86,9 @@ public class CustomReminderRepository {
                 .fetch();
     }
 
-    // 리마인드할 인사이트 조회
-    public List<Long> findRemindersToNotify(Long userId, LocalDate today) {
-
-        // 오늘 날짜와 요일
-        DayOfWeek todayDayOfWeek = today.getDayOfWeek();
-        int todayMonthDay = today.getDayOfMonth();
+    public List<Long> findRemindersToNotifyV2(Long userId, LocalDate date) {
+        DayOfWeek todayDayOfWeek = date.getDayOfWeek();
+        int todayMonthDay = date.getDayOfMonth();
 
         return queryFactory
                 .select(reminder.reminderId)
@@ -100,29 +97,29 @@ public class CustomReminderRepository {
                 .join(reminder.insight, insight)
                 .where(reminder.isEnable.isTrue()
                         .and(insight.folder.user.userId.eq(userId))
+                        .and(insight.createdAt.before(date.atStartOfDay()))  // 인사이트 추가 날짜 필터링
                         .and(
                                 reminderDate.remindType.eq(RemindType.DEFAULT)
                                         .and(
-                                                reminder.lastRemindedAt.after(LocalDate.now().minusDays(1).atStartOfDay())
-                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusWeeks(1).atStartOfDay()))
-                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusMonths(1).atStartOfDay()))
+                                                reminder.lastRemindedAt.eq(date.minusDays(1).atStartOfDay())
+                                                        .or(reminder.lastRemindedAt.eq(date.minusWeeks(1).atStartOfDay()))
+                                                        .or(reminder.lastRemindedAt.eq(date.minusMonths(1).atStartOfDay()))
                                         )
                                         .or(
                                                 reminderDate.remindType.eq(RemindType.WEEK)
                                                         .and(reminderDate.remindDays.contains(todayDayOfWeek.getValue()))
-                                                        .and(insight.folder.user.userId.eq(userId))
+                                                        .and(reminder.lastRemindedAt.before(date.atStartOfDay()))
                                         )
                                         .or(
                                                 reminderDate.remindType.eq(RemindType.MONTH)
                                                         .and(reminderDate.remindDays.contains(todayMonthDay))
-                                                        .and(insight.folder.user.userId.eq(userId))
+                                                        .and(reminder.lastRemindedAt.before(date.atStartOfDay()))
                                         )
                         )
                 ).fetch();
-
     }
 
-    public List<ReminderInsightQueryDto> findReminderInsights(List<Long> reminderIds){
+    public List<ReminderInsightQueryDto> findReminderInsights(List<Long> reminderIds, LocalDate reqDate){
         if(reminderIds.isEmpty()){
             return Collections.emptyList();
         }
@@ -147,7 +144,7 @@ public class CustomReminderRepository {
             dto.setInsightTagList(tags);
             dto.setTodayRead(Optional.ofNullable(dto.getLastRemindedAt())
                     .map(LocalDateTime::toLocalDate)
-                    .map(date -> date.isEqual(LocalDate.now()))
+                    .map(date -> date.isEqual(reqDate))
                     .orElse(false));
         });
 

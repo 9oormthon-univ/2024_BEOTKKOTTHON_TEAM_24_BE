@@ -62,7 +62,6 @@ public class InsightService {
     private final InsightImageRepository insightImageRepository;
     private final HashTagRepository hashTagRepository;
     private final CustomReminderRepository customReminderRepository;
-    private final CustomInsightRepository customInsightRepository;
     // S3 클라이언트와 버킷 이름을 주입
     @Autowired
     private S3Client s3Client;
