@@ -103,7 +103,7 @@ public class ReminderService {
         //remind 할 remind id 조회
         List<Long> reminderIds = customReminderRepository.findRemindersToNotify(userId, reminderCalenderReqDto.getRequestDate());
         //reminde id로 Insight 조회
-        List<ReminderInsightQueryDto> reminderInsightQueryDtos = customReminderRepository.findReminderInsights(reminderIds);
+        List<ReminderInsightQueryDto> reminderInsightQueryDtos = customReminderRepository.findReminderInsights(reminderIds, reminderCalenderReqDto.getRequestDate());
 
         // ReminderCalenderResDto로 변환
         return ReminderCalenderResDto.builder()
