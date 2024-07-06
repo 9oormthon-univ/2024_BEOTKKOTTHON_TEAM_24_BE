@@ -86,41 +86,6 @@ public class CustomReminderRepository {
                 .fetch();
     }
 
-    // 리마인드할 인사이트 조회
-    public List<Long> findRemindersToNotify(Long userId, LocalDate today) {
-
-        // 오늘 날짜와 요일
-        DayOfWeek todayDayOfWeek = today.getDayOfWeek();
-        int todayMonthDay = today.getDayOfMonth();
-
-        return queryFactory
-                .select(reminder.reminderId)
-                .from(reminder)
-                .join(reminder.reminderDate, reminderDate)
-                .join(reminder.insight, insight)
-                .where(reminder.isEnable.isTrue()
-                        .and(insight.folder.user.userId.eq(userId))
-                        .and(
-                                reminderDate.remindType.eq(RemindType.DEFAULT)
-                                        .and(
-                                                reminder.lastRemindedAt.after(LocalDate.now().minusDays(1).atStartOfDay())
-                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusWeeks(1).atStartOfDay()))
-                                                        .or(reminder.lastRemindedAt.after(LocalDate.now().minusMonths(1).atStartOfDay()))
-                                        )
-                                        .or(
-                                                reminderDate.remindType.eq(RemindType.WEEK)
-                                                        .and(reminderDate.remindDays.contains(todayDayOfWeek.getValue()))
-                                                        .and(insight.folder.user.userId.eq(userId))
-                                        )
-                                        .or(
-                                                reminderDate.remindType.eq(RemindType.MONTH)
-                                                        .and(reminderDate.remindDays.contains(todayMonthDay))
-                                                        .and(insight.folder.user.userId.eq(userId))
-                                        )
-                        )
-                ).fetch();
-
-    }
     public List<Long> findRemindersToNotifyV2(Long userId, LocalDate date) {
         DayOfWeek todayDayOfWeek = date.getDayOfWeek();
         int todayMonthDay = date.getDayOfMonth();

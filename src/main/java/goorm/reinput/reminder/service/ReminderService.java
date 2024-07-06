@@ -101,7 +101,7 @@ public class ReminderService {
     public ReminderCalenderResDto getReminderCalender(Long userId, ReminderCalenderReqDto reminderCalenderReqDto){
         log.info("[ReminderService] getReminderCalender userId: {}", userId);
         //remind 할 remind id 조회
-        List<Long> reminderIds = customReminderRepository.findRemindersToNotify(userId, reminderCalenderReqDto.getRequestDate());
+        List<Long> reminderIds = customReminderRepository.findRemindersToNotifyV2(userId, reminderCalenderReqDto.getRequestDate());
         //reminde id로 Insight 조회
         List<ReminderInsightQueryDto> reminderInsightQueryDtos = customReminderRepository.findReminderInsights(reminderIds, reminderCalenderReqDto.getRequestDate());
 
