@@ -336,7 +336,7 @@ public class InsightService {
         if (reminder.getIsEnable()) {
             ReminderDate reminderDate = reminderDateRepository.findByReminder(reminder).orElseThrow(() -> new IllegalArgumentException("ReminderDate not found"));
             builder.remindType(reminderDate.getRemindType()).remindDays(reminderDate.getRemindDays());
-            if (customReminderRepository.isInsightInRemindersToNotify(userId, insightId)) {
+            if (customReminderRepository.isInsightRemindersToNotifyV2(userId, insightId)) {
                 customReminderRepository.updateLastView(insightId);
             }
         }

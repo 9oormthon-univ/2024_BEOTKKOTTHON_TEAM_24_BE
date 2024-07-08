@@ -14,17 +14,17 @@ public class ReminderInsightQueryDto {
     private String insightTitle;
     private String insightMainImage;
     private String insightSummary;
-    private LocalDateTime lastRemindedAt;
+    private LocalDateTime lastViewedAt;
     private List<String> insightTagList;
     private boolean todayRead;
 
     @Builder
-    public ReminderInsightQueryDto(Long insightId, String insightTitle, String insightMainImage, String insightSummary, LocalDateTime lastRemindedAt, List<String> insightTagList, boolean todayRead) {
+    public ReminderInsightQueryDto(Long insightId, String insightTitle, String insightMainImage, String insightSummary, LocalDateTime lastViewedAt, List<String> insightTagList, boolean todayRead) {
         this.insightId = insightId;
         this.insightTitle = insightTitle;
         this.insightMainImage = insightMainImage;
         this.insightSummary = insightSummary;
-        this.lastRemindedAt = lastRemindedAt;
+        this.lastViewedAt = lastViewedAt;
         this.insightTagList = insightTagList;
         this.todayRead = todayRead;
     }

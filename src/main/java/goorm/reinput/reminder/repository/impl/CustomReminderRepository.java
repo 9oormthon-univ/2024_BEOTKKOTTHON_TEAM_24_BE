@@ -51,14 +51,14 @@ public class CustomReminderRepository {
                         reminderQuestion1.reminderQuestionId.as("reminderQuestionId"),
                         insight.insightTitle.as("insightTitle"),
                         insight.insightMainImage.as("insightMainImage"),
-                        reminder.lastRemindedAt.as("lastRemindedAt"),
+                        reminder.lastViewedAt.as("lastViewedAt"),
                         reminderQuestion1.answeredAt.as("answeredAt")
                 ))
                 .from(reminderQuestion1)
                 .join(reminderQuestion1.reminder, reminder)
                 .join(reminder.insight, insight)
                 .where(reminderQuestion1.reminderQuestionId.in(reminderQuestionIds))
-                .orderBy(reminder.lastRemindedAt.asc())
+                .orderBy(reminder.lastViewedAt.asc())
                 .fetch();
 
         results.forEach(dto -> {
@@ -81,7 +81,7 @@ public class CustomReminderRepository {
                 .join(folder.user, user)
                 .where(user.userId.eq(userId)
                         .and(reminder.isEnable.isTrue()))
-                .orderBy(reminder.lastRemindedAt.asc())
+                .orderBy(reminder.lastViewedAt.asc())
                 .limit(5)
                 .fetch();
     }
@@ -129,7 +129,7 @@ public class CustomReminderRepository {
                         insight.insightTitle.as("insightTitle"),
                         insight.insightMainImage.as("insightMainImage"),
                         insight.insightSummary.as("insightSummary"),
-                        reminder.lastRemindedAt.as("lastRemindedAt")
+                        reminder.lastViewedAt.as("lastViewedAt")
                 ))
                 .from(reminder)
                 .join(reminder.insight, insight)
@@ -142,7 +142,7 @@ public class CustomReminderRepository {
                     .where(hashTag.insight.insightId.eq(dto.getInsightId()))
                     .fetch();
             dto.setInsightTagList(tags);
-            dto.setTodayRead(Optional.ofNullable(dto.getLastRemindedAt())
+            dto.setTodayRead(Optional.ofNullable(dto.getLastViewedAt())
                     .map(LocalDateTime::toLocalDate)
                     .map(date -> date.isEqual(reqDate))
                     .orElse(false));
@@ -180,11 +180,40 @@ public class CustomReminderRepository {
 
         return count > 0;
     }
+
+    public boolean isInsightRemindersToNotifyV2(Long userId, Long insightId){
+        long count = Optional.ofNullable(queryFactory
+                .select(reminder.count())
+                .from(reminder)
+                .join(reminder.insight, insight)
+                .where(reminder.isEnable.isTrue()
+                        .and(insight.folder.user.userId.eq(userId))
+                        .and(insight.insightId.eq(insightId))
+                        .and(
+                                reminder.lastRemindedAt.eq(LocalDate.now().minusDays(1).atStartOfDay())
+                                        .or(reminder.lastRemindedAt.eq(LocalDate.now().minusWeeks(1).atStartOfDay()))
+                                        .or(reminder.lastRemindedAt.eq(LocalDate.now().minusMonths(1).atStartOfDay()))
+                        )
+                        .or(
+                                reminder.reminderDate.remindType.eq(RemindType.WEEK)
+                                        .and(reminder.reminderDate.remindDays.contains(LocalDate.now().getDayOfWeek().getValue()))
+                                        .and(insight.folder.user.userId.eq(userId))
+                        )
+                        .or(
+                                reminder.reminderDate.remindType.eq(RemindType.MONTH)
+                                        .and(reminder.reminderDate.remindDays.contains(LocalDate.now().getDayOfMonth()))
+                                        .and(insight.folder.user.userId.eq(userId))
+                        )
+                )
+                .fetchOne()).orElse(0L); // count 쿼리는 결과가 단일 숫자이므로 fetchOne() 사용
+
+        return count > 0;
+    }
     //reminder lastView 업데이트
     public void updateLastView(Long insightId){
         queryFactory
                 .update(reminder)
-                .set(reminder.lastRemindedAt, LocalDateTime.now())
+                .set(reminder.lastViewedAt, LocalDateTime.now())
                 .where(reminder.insight.insightId.eq(insightId))
                 .execute();
     }

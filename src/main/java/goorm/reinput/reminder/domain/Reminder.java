@@ -24,6 +24,7 @@ public class Reminder extends BaseTimeEntity {
 
     private Boolean isEnable;
     private LocalDateTime lastRemindedAt;
+    private LocalDateTime lastViewedAt;
 
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
@@ -38,9 +39,12 @@ public class Reminder extends BaseTimeEntity {
     private List<ReminderQuestion> reminderQuestion;
 
     @Builder
-    public Reminder(Boolean isEnable, LocalDateTime lastRemindedAt, Insight insight) {
+    public Reminder(Boolean isEnable, LocalDateTime lastRemindedAt, LocalDateTime lastViewedAt, Insight insight, ReminderDate reminderDate, List<ReminderQuestion> reminderQuestion) {
         this.isEnable = isEnable;
         this.lastRemindedAt = lastRemindedAt;
+        this.lastViewedAt = lastViewedAt;
         this.insight = insight;
+        this.reminderDate = reminderDate;
+        this.reminderQuestion = reminderQuestion;
     }
 }
